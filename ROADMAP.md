@@ -8,6 +8,7 @@ The [existing-port comparison](docs/existing-ports.md) records prior art. The [p
 
 - Native execution policy; no remote computer bridge or public endpoint.
 - Explicit first-user budget selection, persistent changes and preserved existing preferences.
+- Upstream 0.15.9 imported and reviewed; [update evidence](docs/upstream-0.15.9.md) and [tracking issue](https://github.com/noodlemind/pstack-plugin/issues/4).
 - Original source/license inventory and reviewed upstream update mechanism.
 - Source-only public distribution, staged-tree privacy checks and reproducible verification.
 
@@ -15,7 +16,6 @@ The [existing-port comparison](docs/existing-ports.md) records prior art. The [p
 
 | Work item | Acceptance criteria |
 | --- | --- |
-| [Upstream 0.15.9 reconciliation](https://github.com/noodlemind/pstack-plugin/issues/4) | Compare the current pin with `e43c7ee26e0038c6c1fa8380dd34ce86ff94cb2a`; account for every change, including correct and benchmark-checklist; preserve adaptations, run behavioral checks, then advance the pin |
 | [Streamlined setup and CLI compatibility](https://github.com/noodlemind/pstack-plugin/issues/5) | One setup flow reports installed, selected and verified states separately; no fresh-user defaults or silent substitutions; supported CLI versions pass discovery, execution, cancellation and recovery tests without widening host permissions |
 | [Live cloud validation](https://github.com/noodlemind/pstack-plugin/issues/8) | Install in an actual supported cloud host; run setup, native work, real verification, durable checkpoint export and interrupted recovery; record available models and permissions without personal data |
 | [Native agent coordination and continuation](https://github.com/noodlemind/pstack-plugin/issues/7) | Exercise real native spawn/reuse/message/cancel and arena/swarm behavior in a host that permits delegation; verify idle wake, stop conditions and cancellation through its supported scheduler |

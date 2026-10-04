@@ -2,7 +2,7 @@
   "name": "pstack-controls",
   "private": true,
   "type": "module",
-  "version": "0.15.5-openai.7",
+  "version": "0.15.9-openai.8",
   "dependencies": {
     "playwright": "1.63.0"
   }
