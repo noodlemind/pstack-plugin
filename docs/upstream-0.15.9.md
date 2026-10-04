@@ -6,11 +6,9 @@ On 2026-10-04, the latest official `cursor/plugins` main resolved to `e43c7ee26e
 
 The reviewed three-way updater imported all 21 changed files and three new skills. The resulting bundle has 74 skills, 24 principles, 23 playbooks and four agent roles. All 190 original files and both licenses are byte-preserved. No cursor-team-kit file or external dependency changed upstream.
 
-A clean replacement would lose the native execution policy and explicit setup. The selected approach merges the archived upstream delta into the adaptation, reviews adapter-owned files, and keeps private configuration outside the package. Git retains the previous archive; private staging also preserves its snapshot. There were no upstream deletions. The only merge blocker was the adapter README, resolved by retaining our setup and limitations while documenting the new release.
+The updater merges upstream changes while preserving the native execution policy and explicit setup. Private configuration stays outside the package. Git and private staging retain the previous archive. There were no upstream deletions. The adapter README was the only merge blocker; its resolution retains our setup and limitations and documents the new release.
 
-The updater now derives all package versions from one adapter version and preserves the adapter homepage. It excludes dependency installations and previous staging metadata. It regenerates the inventory descriptions, reference lists and playbook steps from the new originals, preserving the full inventory rather than reducing it to hashes. The release checker rejects a mismatched manifest, stale runtime package version or missing adapted skill even when the archive itself is intact. These corrections apply **Model the Domain** by assigning release identity one owner, and **Prove It Works** through negative tests and an installed candidate.
-
-The throughput checkpoint had one gate, the exact-pin delta review. Source import, compatibility edits and evidence share the same package and stayed with one writer. Test suites ran independently after the edits. Parallel agent review was skipped under the repository's sequential-work instruction; no diverse panel is claimed.
+The updater derives all package versions from one adapter version and preserves the adapter homepage. It excludes dependencies and previous staging metadata. It regenerates inventory descriptions, reference lists and playbook steps from the new originals. The release checker rejects mismatched versions and missing adapted skills, even when the archive is intact.
 
 ## Every changed upstream file
 
@@ -54,4 +52,4 @@ The public `UPDATE-REVIEW.json` contains sanitized review details. Private raw r
 
 ## Remaining limits
 
-This update imports the latest upstream behavior; it does not resolve the pre-existing live-host gaps. Real native parallel coordination, scheduled hourly wake/cancel, Codex Cloud execution, cross-provider panels, team automations and authorized remote shipping still need their separate verification. APIs remain disabled. No new goal, schedule, provider selection, network listener or laptop connection was created. See the coverage table and remaining roadmap issues.
+Native parallel coordination, scheduled hourly wake and cancellation, Codex Cloud execution, cross-provider panels, team automations and authorized remote shipping remain unverified. This review ran sequentially under the repository instructions. APIs remain disabled. The update created no goal, schedule, provider selection, network listener or laptop connection. See the coverage table and remaining roadmap issues.

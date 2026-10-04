@@ -18,11 +18,15 @@ class UpdateTests(unittest.TestCase):
  def sha(self):return sync.git(self.repo,'rev-parse','HEAD').decode().strip()
  def test_noop_pin_is_empty(self):self.assertEqual(sync.plan(self.repo,'HEAD',self.root)['changes'],[])
  def test_plan_retains_reference_description_and_playbook_inventory(self):
-  self.write('pstack/skills/poteto-mode/playbooks/demo.md',b'# Demo\n1. Run `verify`.\n2. Recover.\n');self.commit()
+  self.write('pstack/skills/poteto-mode/playbooks/demo.md',b'# Demo\n1. Run `verify`.\n2. Recover.\n')
+  self.commit()
   rows={r['path']:r for r in sync.plan(self.repo,'HEAD',self.root)['inventory']}
-  self.assertEqual(rows[self.file]['kind'],'skill');self.assertEqual(rows[self.file]['description'],'fixture')
+  self.assertEqual(rows[self.file]['kind'],'skill')
+  self.assertEqual(rows[self.file]['description'],'fixture')
   book=rows['pstack/skills/poteto-mode/playbooks/demo.md']
-  self.assertEqual(book['references'],['verify']);self.assertEqual(book['steps'],['Run `verify`.','Recover.']);self.assertEqual(book['kind'],'playbook')
+  self.assertEqual(book['references'],['verify'])
+  self.assertEqual(book['steps'],['Run `verify`.','Recover.'])
+  self.assertEqual(book['kind'],'playbook')
  def test_new_upstream_namespace_collision_requires_review(self):
   self.write('cursor-team-kit/skills/demo/SKILL.md',self.old);self.commit()
   with self.assertRaisesRegex(ValueError,'mapping collision'):sync.plan(self.repo,'HEAD',self.root)
@@ -38,18 +42,26 @@ class UpdateTests(unittest.TestCase):
  def test_stage_preserves_identity_and_updates_all_package_versions(self):
   (self.root/'plugin.json').write_text(json.dumps({'name':'pstack','version':'0.1.0-openai.1','homepage':'https://example.com/adapter'}))
   (self.root/'runtime').mkdir()
-  for filename,meta in [('package.json',{'version':'0.1.0-openai.1'}),('package-lock.json',{'version':'0.1.0-openai.1','packages':{'':{'version':'0.1.0-openai.1'}}})]:
+  for filename,meta in [
+   ('package.json',{'version':'0.1.0-openai.1'}),
+   ('package-lock.json',{'version':'0.1.0-openai.1','packages':{'':{'version':'0.1.0-openai.1'}}}),
+  ]:
    (self.root/'runtime'/filename).write_text(json.dumps(meta))
-  self.write('pstack/.cursor-plugin/plugin.json',b'{"version":"0.2.0"}');self.commit()
-  dest=self.home/'candidate';sync.stage(sync.plan(self.repo,'HEAD',self.root),dest,self.root)
+  self.write('pstack/.cursor-plugin/plugin.json',b'{"version":"0.2.0"}')
+  self.commit()
+  dest=self.home/'candidate'
+  sync.stage(sync.plan(self.repo,'HEAD',self.root),dest,self.root)
   self.assertEqual(json.loads((dest/'plugin.json').read_text())['homepage'],'https://example.com/adapter')
   for filename in ['plugin.json','runtime/package.json','runtime/package-lock.json']:
    self.assertEqual(json.loads((dest/filename).read_text())['version'],'0.2.0-openai.2')
   self.assertEqual(json.loads((dest/'runtime/package-lock.json').read_text())['packages']['']['version'],'0.2.0-openai.2')
  def test_stage_excludes_dependencies_and_old_candidate_metadata(self):
   for folder in ['node_modules','.git','.upstream-update','upstream-history']:
-   path=self.root/folder;path.mkdir();(path/'private-fixture').write_text('fixture')
-  dest=self.home/'candidate';sync.stage(sync.plan(self.repo,'HEAD',self.root),dest,self.root)
+   path=self.root/folder
+   path.mkdir()
+   (path/'private-fixture').write_text('fixture')
+  dest=self.home/'candidate'
+  sync.stage(sync.plan(self.repo,'HEAD',self.root),dest,self.root)
   for folder in ['node_modules','.git','.upstream-update','upstream-history']:
    self.assertFalse((dest/folder/'private-fixture').exists())
  def test_stale_plan_does_not_stage(self):

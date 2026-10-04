@@ -9,15 +9,24 @@ OWNED={'skills/setup-pstack/SKILL.md','skills/make-bot-ui/SKILL.md','README.md',
 def sha(data):return hashlib.sha256(data).hexdigest() if data is not None else None
 def encode(data):return base64.b64encode(data).decode() if data is not None else None
 def inventory_row(path,data):
- file=Path(path);row={'path':path,'sha256':sha(data),'bytes':len(data)}
+ file=Path(path)
+ row={'path':path,'sha256':sha(data),'bytes':len(data)}
  if file.suffix not in {'.md','.mdc','.ts','.mjs','.sh','.json','.yaml','.html','.js','.css'} and file.name not in {'watch-pr','bun.lock'}:
   return {**row,'kind':'asset'}
- text=data.decode();row['references']=sorted(set(re.findall(r'`([^`\n]{1,180})`',text)))
+ text=data.decode()
+ row['references']=sorted(set(re.findall(r'`([^`\n]{1,180})`',text)))
  if file.name=='SKILL.md':
   row['kind']='automation-skill' if '/automations/' in path else 'skill'
-  description=re.search(r'^description: (.*)$',text,re.M);row['description']=description.group(1) if description else ''
- elif '/playbooks/' in path:row.update(kind='playbook',steps=re.findall(r'^\d+\. (.*)',text,re.M))
- else:row['kind']=next((kind for part,kind in [('agents','agent'),('rules','rule'),('scripts','runtime')] if '/'+part+'/' in path),'reference/config/guide')
+  description=re.search(r'^description: (.*)$',text,re.M)
+  row['description']=description.group(1) if description else ''
+ elif '/playbooks/' in path:
+  row.update(kind='playbook',steps=re.findall(r'^\d+\. (.*)',text,re.M))
+ else:
+  row['kind']=next(
+   (kind for part,kind in [('agents','agent'),('rules','rule'),('scripts','runtime')]
+    if '/'+part+'/' in path),
+   'reference/config/guide',
+  )
  return row
 def git(repo,*argv):return subprocess.run(['git','-C',str(repo),*argv],capture_output=True,check=True).stdout
 def mapped(path):
@@ -124,12 +133,17 @@ def stage(doc,destination,root=ROOT):
  for manifest in [dest/'plugin.json',dest/'.codex-plugin/plugin.json']:
   if not manifest.exists():continue
   meta=json.loads(manifest.read_text())
-  if adapter_version is None:adapter_version=version+'-openai.'+str(int(meta['version'].rsplit('.',1)[-1])+1)
-  meta['version']=adapter_version;manifest.write_text(json.dumps(meta,indent=2)+'\n')
+  if adapter_version is None:
+   adapter_version=version+'-openai.'+str(int(meta['version'].rsplit('.',1)[-1])+1)
+  meta['version']=adapter_version
+  manifest.write_text(json.dumps(meta,indent=2)+'\n')
  for manifest in [dest/'runtime/package.json',dest/'runtime/package-lock.json']:
-  if not manifest.exists() or adapter_version is None:continue
-  meta=json.loads(manifest.read_text());meta['version']=adapter_version
-  if 'packages' in meta:meta['packages']['']['version']=adapter_version
+  if not manifest.exists() or adapter_version is None:
+   continue
+  meta=json.loads(manifest.read_text())
+  meta['version']=adapter_version
+  if 'packages' in meta:
+   meta['packages']['']['version']=adapter_version
   manifest.write_text(json.dumps(meta,indent=2)+'\n')
  (dest/'references').mkdir(exist_ok=True)
  (dest/'.upstream-update').mkdir(exist_ok=True);(dest/'.upstream-update/plan.json').write_text(json.dumps(doc,indent=2)+'\n');(dest/'references/upstream-inventory.json').write_text(json.dumps({'repository':doc['repository'],'commit':doc['to_commit'],'pstack_version':version,'files':doc['inventory']},indent=2)+'\n')
