@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.15.5-openai.7
+
+- Make mocked-provider fixtures independent of coding CLIs installed on the test machine. Clean Linux/macOS CI exposed six tests that depended on local executable presence.
+- Preserve the production guard that rejects a missing selected CLI. Fixture launchers cannot invoke a real model account.
+- Link the behavior roadmap to repository work items.
+
 ## 0.15.5-openai.6
 
 - Establish a source-only public repository with preserved upstream credit and MIT notices.

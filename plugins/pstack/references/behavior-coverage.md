@@ -1,6 +1,6 @@
 # pstack behavior coverage — native execution design
 
-Current package: **0.15.5-openai.6**. Upstream pin: `7022c81efb48d8b5eb15498ce6043a3bd74b694c` (pstack 0.15.5). This independent port executes inside the current coding host. All original source files, both MIT licenses and attribution remain preserved. Private development receipts are not published. Current checks are reproducible from this source tree; live-host coverage is identified separately.
+Current package: **0.15.5-openai.7**. Upstream pin: `7022c81efb48d8b5eb15498ce6043a3bd74b694c` (pstack 0.15.5). This independent port executes inside the current coding host. All original source files, both MIT licenses and attribution remain preserved. Private development receipts are not published. Current checks are reproducible from this source tree; live-host coverage is identified separately.
 
 | Upstream capability | Current implementation | Evidence and limits |
 | --- | --- | --- |

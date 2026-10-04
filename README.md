@@ -45,6 +45,6 @@ The repository contains source and synthetic tests, not personal configuration, 
 
 ## Status and development
 
-Adapter version **0.15.5-openai.6** pins upstream **0.15.5** at `7022c81efb48d8b5eb15498ce6043a3bd74b694c`. The bundle preserves 71 skills, 23 playbooks, four agent roles and the Benny automation procedures. Preservation alone does not establish full behavioral equivalence. Upstream **0.15.9** was verified during the comparison; importing that newer behavior remains a reviewed update task.
+Adapter version **0.15.5-openai.7** pins upstream **0.15.5** at `7022c81efb48d8b5eb15498ce6043a3bd74b694c`. The bundle preserves 71 skills, 23 playbooks, four agent roles and the Benny automation procedures. Preservation alone does not establish full behavioral equivalence. Upstream **0.15.9** was verified during the comparison; importing that newer behavior remains a reviewed update task.
 
 [Coverage](plugins/pstack/references/behavior-coverage.md) distinguishes tested behavior from live cloud, native scheduling, cross-provider and team-integration gaps. [Verification](docs/verification.md) describes reproducible checks. [Roadmap](ROADMAP.md) and GitHub issues track remaining work. [Contributing](CONTRIBUTING.md) explains reviews and releases; [upstream updates](plugins/pstack/references/upstream-updates.md) explains how to absorb changes without discarding the port.
