@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "pstack",
-  "version": "0.15.5-openai.6",
+  "version": "0.15.9-openai.8",
   "description": "Independent Codex adaptation of Lauren Tan (poteto)\u2019s pstack: native workflows, explicit user setup, durable verification and recovery.",
   "author": {
     "name": "Lauren Tan (poteto), original pstack; pstack-plugin contributors, independent adaptation"
