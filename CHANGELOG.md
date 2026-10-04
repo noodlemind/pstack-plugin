@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.15.9-openai.8
+
+- Import upstream pstack 0.15.9 at `e43c7ee26e0038c6c1fa8380dd34ce86ff94cb2a`; preserve all 190 originals and both MIT notices.
+- Add correct, benchmark-checklist and Explain the Number; update all changed agent, design, performance, planning and PR procedures.
+- Map fresh-agent reuse limits and hourly audits to the native host. Add macOS measurement guidance without enabling a scheduler or external provider.
+- Preserve the adapter homepage during updates, synchronize runtime package versions, and exclude dependencies and stale staging metadata.
+- Preserve full source inventory metadata, including reference lists, skill descriptions and playbook steps, in future update plans.
+- Add release consistency checks and hourly plan regression tests. Record the complete change review and installed verification in `docs/upstream-0.15.9.md`.
+
 ## 0.15.5-openai.7
 
 - Make mocked-provider fixtures independent of coding CLIs installed on the test machine. Clean Linux/macOS CI exposed six tests that depended on local executable presence.
