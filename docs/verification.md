@@ -2,10 +2,10 @@
 
 ## Reproducible public checks
 
-- `python3 -m unittest discover -s plugins/pstack/tests -v`: 119 adapter tests, including all budget choices, fresh users with no default, changes/persistence, native/cloud policy, task/decision/recovery, verification, cancellation and updater guards.
+- `python3 -m unittest discover -s plugins/pstack/tests -v`: 122 adapter tests, including all budget choices, fresh users with no default, changes/persistence, native/cloud policy, task/decision/recovery, verification, cancellation and updater guards.
 - `python3 -m unittest discover -s tools/tests -v`: staged-content privacy checks, secret masking, private artifacts, synthetic contacts and symlink rejection.
 - `python3 tools/check_fresh_setup.py`: separate helper processes show no initial budget, rejected unconfigured planning, small then medium choices, preserved preference, actual executable verification, checkpoint recovery and no daemon/provider invocation.
-- `python3 tools/check_upstream.py`: verifies all 187 archived source hashes and the unchanged Lauren Tan/Cursor license texts.
+- `python3 tools/check_upstream.py`: verifies all 190 archived source hashes and the unchanged Lauren Tan/Cursor license texts.
 - Preserved upstream `bun test orch watch-pr` and `bun run typecheck`: orchestration/watch behavior and TypeScript checks against the pinned sources.
 - `python3 tools/audit_repository.py`: checks exact staged blob content and artifact paths without echoing matched sensitive values. Run after staging intended files. It is not a guarantee against every possible secret or PII format.
 

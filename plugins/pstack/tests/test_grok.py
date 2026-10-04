@@ -65,7 +65,7 @@ class GrokTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             store = Store(Path(folder))
             store.put("config", "execution", {"host": "local", "mode": "local-cli", "enabled_cli": ["grok"], "machine": harnesses.fingerprint()})
-            with patch("providers.grok_catalog", return_value=["grok-4.7"]), patch("providers.capture", return_value=result):
+            with patch("harnesses.shutil.which", return_value="fixture-grok"), patch("providers.grok_catalog", return_value=["grok-4.7"]), patch("providers.capture", return_value=result):
                 with self.assertRaises(RuntimeError):
                     providers.probe(store, "grok", "grok-4.7", "max")
             self.assertEqual(store.list("model"), [])
@@ -75,7 +75,7 @@ class GrokTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             store = Store(Path(folder))
             store.put("config", "execution", {"host": "local", "mode": "local-cli", "enabled_cli": ["grok"], "machine": harnesses.fingerprint()})
-            with patch("providers.grok_catalog", return_value=["grok-4.7"]), patch("providers.capture", return_value=subprocess.CompletedProcess([], 0, json.dumps(data), "")):
+            with patch("harnesses.shutil.which", return_value="fixture-grok"), patch("providers.grok_catalog", return_value=["grok-4.7"]), patch("providers.capture", return_value=subprocess.CompletedProcess([], 0, json.dumps(data), "")):
                 model = providers.probe(store, "grok", "grok-4.7", "xhigh")
             self.assertEqual(model["family"], "xai")
             self.assertEqual(model["efforts"], ["xhigh"])

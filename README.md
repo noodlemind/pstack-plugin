@@ -1,6 +1,6 @@
 # pstack for Codex
 
-An independent, experimental Codex adaptation of **[pstack by Lauren Tan (poteto)](https://github.com/cursor/plugins/tree/7022c81efb48d8b5eb15498ce6043a3bd74b694c/pstack)**. Lauren's engineering principles and workflows are the foundation; this repository supplies host compatibility, explicit setup, durable state, verification helpers and a reviewable update path. [Attribution and licenses](NOTICE.md).
+An independent, experimental Codex adaptation of **[pstack by Lauren Tan (poteto)](https://github.com/cursor/plugins/tree/e43c7ee26e0038c6c1fa8380dd34ce86ff94cb2a/pstack)**. Lauren's engineering principles and workflows are the foundation; this repository supplies host compatibility, explicit setup, durable state, verification helpers and a reviewable update path. [Attribution and licenses](NOTICE.md).
 
 The intended value is consistent, verifiable operation across coding environments. Native host tools work by default; supported local CLIs require explicit selection. Direct provider APIs and OpenRouter are planned, not available in this release. Passing local tests does not establish full upstream equivalence or greater reliability than another port.
 
@@ -45,6 +45,6 @@ The repository contains source and synthetic tests, not personal configuration, 
 
 ## Status and development
 
-Adapter version **0.15.5-openai.6** pins upstream **0.15.5** at `7022c81efb48d8b5eb15498ce6043a3bd74b694c`. The bundle preserves 71 skills, 23 playbooks, four agent roles and the Benny automation procedures. Preservation alone does not establish full behavioral equivalence. Upstream **0.15.9** was verified during the comparison; importing that newer behavior remains a reviewed update task.
+Adapter version **0.15.9-openai.8** pins upstream **0.15.9** at `e43c7ee26e0038c6c1fa8380dd34ce86ff94cb2a`. The bundle preserves 74 skills, 23 playbooks, four agent roles and the Benny automation procedures. Preservation alone does not establish full behavioral equivalence. This release imports all 21 changed upstream files, including `/correct`, `/benchmark-checklist`, the Explain the Number principle, fresh-agent guidance and hourly audit procedures. See the [update review](docs/upstream-0.15.9.md).
 
 [Coverage](plugins/pstack/references/behavior-coverage.md) distinguishes tested behavior from live cloud, native scheduling, cross-provider and team-integration gaps. [Verification](docs/verification.md) describes reproducible checks. [Roadmap](ROADMAP.md) and GitHub issues track remaining work. [Contributing](CONTRIBUTING.md) explains reviews and releases; [upstream updates](plugins/pstack/references/upstream-updates.md) explains how to absorb changes without discarding the port.

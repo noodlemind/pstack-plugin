@@ -1,0 +1,147 @@
+{
+  "commit": "e43c7ee26e0038c6c1fa8380dd34ce86ff94cb2a",
+  "previous_commit": "7022c81efb48d8b5eb15498ce6043a3bd74b694c",
+  "pstack_version": "0.15.9",
+  "adapter_version": "0.15.9-openai.8",
+  "review_date": "2026-10-04",
+  "resolved_conflicts": [
+    {
+      "path": "pstack/README.md",
+      "resolution": "Resolve adapter-owned README manually; expose new skills, current pin, original credit and existing capability limits."
+    }
+  ],
+  "behavior_review": [
+    {
+      "path": "pstack/.cursor-plugin/plugin.json",
+      "review": "Archive the original manifest; advance both adapter manifests and runtime packages to 0.15.9-openai.8.",
+      "original_sha256": "c17868a6a39a8f7c109fdedf5df7ebcc4d8cde127a10f40c663a8c46adc4087e"
+    },
+    {
+      "path": "pstack/README.md",
+      "review": "Resolve adapter-owned README manually; expose new skills, current pin, original credit and existing capability limits.",
+      "original_sha256": "850eea901004b9ef4633e17c1bd9932863046a021242b4e043907ae534b21fa8"
+    },
+    {
+      "path": "pstack/agents/poteto-agent.md",
+      "review": "Fresh agents for new tasks; resume only for the stateful exceptions in poteto-mode.",
+      "original_sha256": "abe41c169ecbfe65641f1725f4188d568e046c0dec7fd2dc271abb594c299201"
+    },
+    {
+      "path": "pstack/docs/guide/08-principles.md",
+      "review": "24 principles and Explain the Number link retained.",
+      "original_sha256": "a103e293dd6d9513f425feac39547f0c2c049300f36704d80b6d49c958e5a4bb"
+    },
+    {
+      "path": "pstack/docs/guide/README.md",
+      "review": "Guide index now names 24 principles.",
+      "original_sha256": "125f870a93bf830d45bda187f585cec4508cc9ca5121271af58adbe937bbe54f"
+    },
+    {
+      "path": "pstack/skills/architect/SKILL.md",
+      "review": "Design review assumes agents see partial context; favor changes that stay correct across the repository.",
+      "original_sha256": "741901140ee382ebf93263a7ed03c6ee3719e578416d81afcd195876fa16c496"
+    },
+    {
+      "path": "pstack/skills/architect/references/design-red-flags.md",
+      "review": "Add split ownership, duplicate paths, importable internals and hand-synced lists.",
+      "original_sha256": "d0e639e4cc588ec865f930d3a4111faad60987ae36925917e319d7ceca7c69ce"
+    },
+    {
+      "path": "pstack/skills/benchmark-checklist/SKILL.md",
+      "review": "Retain all seven questions; add Linux/macOS tool mapping and preserve unrelated user processes.",
+      "original_sha256": "6a767e788a60428fa14e645ee10fe2e49896e514ff654f668b1d824deb9038e8"
+    },
+    {
+      "path": "pstack/skills/correct/SKILL.md",
+      "review": "Retain mistake classes, architecture/types/lint/tests order, historical negative proof and enforcement table; constrain history to the current project.",
+      "original_sha256": "bf482bacc972b3f124a4af8bf9364b4b3e280cb5845e44c326ea4f4565e5c904"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/SKILL.md",
+      "review": "Retain plain-language responses, benchmark trigger, new principle and strict fresh-agent policy; native host contract remains authoritative.",
+      "original_sha256": "404c0ef4a78e93451b2ab555ca532e7197b5cf87de29205b6f7109dbee5d9c4d"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/autopilot-full.md",
+      "review": "Fresh owners, unit pushes, hourly audit, live liveness proof and conditional merge-time rebase; no implicit goal or merge authorization.",
+      "original_sha256": "05ca30a16242c19d0c78ba1e88cca66f858d75252cb154fd740099fe292de802"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/autopilot-stack.md",
+      "review": "Hourly audit, unit pushes, removal of implicit goal and immediate zero-write hold retained.",
+      "original_sha256": "007c0a3b12011954a224f54773ef4ad7b75918be0a311914c1b51ad4e794c1e5"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/hillclimb.md",
+      "review": "Vet harness before freezing; print errors/work counts; borrow performance mantra order without early-stop rule.",
+      "original_sha256": "244f289898fe67a458065e90fe8217c916c5acf61cdee8975ade3f9831a12e91"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/multi-phase-plan.md",
+      "review": "Hourly loop and built-in PR tool preference; native hourly scheduling mapping remains conditional on host availability.",
+      "original_sha256": "27d310e3fc3937a60b8fcbe1318f9d249a7477a722907bf85b3e4eb3dc436b11"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/opening-a-pr.md",
+      "review": "Retain new Why/What changed/Scope structure and built-in PR create/edit preference.",
+      "original_sha256": "ab40de7163c1c6e274f46ee559b2e53ef45673703f601f13f4931c199e6fb90f"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/playbooks/perf-issue.md",
+      "review": "Vet every measurement; use seven ordered performance mantras and stop when an earlier one meets the target.",
+      "original_sha256": "2b88ad0f880e4d4d755ac19fe52414d6631d6baa816d060f53cf0a7429d7e14a"
+    },
+    {
+      "path": "pstack/skills/poteto-mode/scripts/check-plan.mjs",
+      "review": "Exact upstream checker now requires /loop 1h and no longer requires /goal or a 30-minute marker; positive and negative fixture tests pass.",
+      "original_sha256": "4f9432d9989880b6afc2bdda503d5b12a9d07d357ecf31936b7ab5e83bc80523"
+    },
+    {
+      "path": "pstack/skills/principle-explain-the-number/SKILL.md",
+      "review": "Retain measured limiter, alternative explanations, counts/spread and benchmark link.",
+      "original_sha256": "5aac99e7ce0bb1b37e2579acf4fe88c32a1456d9d46afd4a57cfe1df9092e89c"
+    },
+    {
+      "path": "pstack/skills/swarm/SKILL.md",
+      "review": "Respawn a worker after an invalid evidence report rather than reusing it.",
+      "original_sha256": "bdcee4168e22428036e93d7cdeec3f391dbc4132f927f6db2540328c22db0273"
+    },
+    {
+      "path": "pstack/skills/technical-writing/SKILL.md",
+      "review": "Retain writing rules and remove obsolete fetched-date source annotations per upstream.",
+      "original_sha256": "f5c512ffeec70bc4e0dee50f7bb4c26742e1be77967a6e8b15d1921e1c209ceb"
+    },
+    {
+      "path": "pstack/skills/typescript-best-practices/references/patterns.md",
+      "review": "Retain schema-owned parsing and typed validator example; no new Zod runtime dependency is introduced.",
+      "original_sha256": "faa1362055374452efccac1b629677c61acfb0bcc6c4e3311836b5715638ee18"
+    }
+  ],
+  "installed_workflow_evidence": {
+    "candidate": "pstack-release-review@pstack-release-review, 0.15.9-openai.8, installed through supported Codex marketplace flow",
+    "adapter_tests": {
+      "passed": 122,
+      "provider_calls": "mocked or omitted"
+    },
+    "upstream_tests": {
+      "passed": 52,
+      "typecheck": "PASS"
+    },
+    "release_privacy_tests": {
+      "passed": 9
+    },
+    "source_integrity": {
+      "original_files": 190,
+      "skills": 74,
+      "licenses": "unchanged"
+    },
+    "fresh_setup": "Separate installed helper processes: unconfigured budget rejected, small then medium preserved, real command verification and checkpoint recovery passed",
+    "new_workflows": "Installed correct instructions applied to updater defects; two checks fail against old updater and pass after fix. Installed benchmark checklist rejects skipped generator work after five interleaved runs per side; rows profiler hotspot observed outside measurements. Perf tasks/mode recovered after a fresh process.",
+    "limits": [
+      "No native parallel delegation: repository instructions require sequential execution.",
+      "No real scheduler wake/cancel, cloud job, cross-provider panel, team automation or remote shipping test in this update.",
+      "Native mode rejects legacy CLI loops; no provider, service, tunnel or scheduler was enabled."
+    ]
+  },
+  "review_document": "docs/upstream-0.15.9.md"
+}
