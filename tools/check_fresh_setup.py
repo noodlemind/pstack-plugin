@@ -4,6 +4,7 @@ Only an aggregate, anonymous result is printed; temp paths and runtime IDs stay
 inside the temporary fixture and are removed when the test exits.
 """
 from pathlib import Path
+import argparse
 import json
 import os
 import subprocess
@@ -11,10 +12,12 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIME = ROOT/'plugins/pstack/runtime/pstack.py'
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--plugin-root', type=Path, default=ROOT/'plugins/pstack')
+    runtime = parser.parse_args().plugin_root/'runtime/pstack.py'
     with tempfile.TemporaryDirectory(prefix='pstack-first-use-') as folder:
         root = Path(folder)
         repo = root/'project';repo.mkdir()
@@ -22,7 +25,7 @@ def main():
         env = {**os.environ,'PSTACK_DATA':str(state),'PSTACK_EXECUTION_HOST':'local'}
 
         def cli(*args, success=True):
-            result = subprocess.run([sys.executable,str(RUNTIME),*args],env=env,capture_output=True,text=True,check=False)
+            result = subprocess.run([sys.executable,str(runtime),*args],env=env,capture_output=True,text=True,check=False)
             assert (result.returncode == 0) == success, 'Unexpected helper exit status'
             return json.loads(result.stdout)
 

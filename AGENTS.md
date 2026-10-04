@@ -9,3 +9,11 @@ Never copy personal configuration, transcripts, credentials, login state or raw 
 New users must choose a reasoning budget; do not seed unlimited, a model ID or a local harness choice. Preserve existing explicit preferences and other marketplace entries. Report actual model identities and unverified capabilities accurately.
 
 Before publishing, run the documented tests, original-source hash check and staged-tree privacy audit. Review Git commit metadata as well as files. Track unfinished capability work in ROADMAP.md and issues; successful manifests or installation alone do not close behavioral gaps.
+
+## Enforced release rules
+
+| Rule | Enforcement |
+| --- | --- |
+| Preserve the adapter homepage and advance all package versions together | `test_stage_preserves_identity_and_updates_all_package_versions`; one version value in the updater |
+| Archive the exact pin and ship every mapped skill file | `tools/check_upstream.py` in local checks and CI; missing-skill and stale-version regression tests |
+| Keep dependencies and previous candidate metadata out of staging | `test_stage_excludes_dependencies_and_old_candidate_metadata` |

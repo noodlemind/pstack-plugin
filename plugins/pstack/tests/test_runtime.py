@@ -149,6 +149,15 @@ class RuntimeTests(unittest.TestCase):
 
 
  def fixture_models(self):
+  bin_dir = self.root / 'fixture-bin'
+  bin_dir.mkdir(exist_ok=True)
+  for name in ('codex', 'claude'):
+   executable = bin_dir / name
+   executable.write_text('#!/bin/sh\nexit 99\n')
+   executable.chmod(0o755)
+  path_patch = patch.dict(os.environ, {'PATH': str(bin_dir) + os.pathsep + os.environ.get('PATH', '')})
+  path_patch.start()
+  self.addCleanup(path_patch.stop)
   models=[{'key':'codex:a','provider':'codex','model':'a','family':'openai','efforts':['max'],'verified':True},{'key':'claude:b','provider':'claude','model':'b','family':'anthropic','efforts':['max'],'verified':True}]
   for model in models:self.store.put('model',model['key'],model)
   configure(self.store,'unlimited',{r:[m['key'] for m in models] if r in {'arena runners','arena cross-judge pool','architect runners','interrogate reviewers'} else ['codex:a'] for r in ROLES},'explicit isolated test fixture')
