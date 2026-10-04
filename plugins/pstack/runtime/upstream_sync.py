@@ -8,6 +8,17 @@ HEADER='\n## OpenAI runtime contract\n\nRead [the adapter contract](../../refere
 OWNED={'skills/setup-pstack/SKILL.md','skills/make-bot-ui/SKILL.md','README.md','plugin.json','.codex-plugin/plugin.json'}
 def sha(data):return hashlib.sha256(data).hexdigest() if data is not None else None
 def encode(data):return base64.b64encode(data).decode() if data is not None else None
+def inventory_row(path,data):
+ file=Path(path);row={'path':path,'sha256':sha(data),'bytes':len(data)}
+ if file.suffix not in {'.md','.mdc','.ts','.mjs','.sh','.json','.yaml','.html','.js','.css'} and file.name not in {'watch-pr','bun.lock'}:
+  return {**row,'kind':'asset'}
+ text=data.decode();row['references']=sorted(set(re.findall(r'`([^`\n]{1,180})`',text)))
+ if file.name=='SKILL.md':
+  row['kind']='automation-skill' if '/automations/' in path else 'skill'
+  description=re.search(r'^description: (.*)$',text,re.M);row['description']=description.group(1) if description else ''
+ elif '/playbooks/' in path:row.update(kind='playbook',steps=re.findall(r'^\d+\. (.*)',text,re.M))
+ else:row['kind']=next((kind for part,kind in [('agents','agent'),('rules','rule'),('scripts','runtime')] if '/'+part+'/' in path),'reference/config/guide')
+ return row
 def git(repo,*argv):return subprocess.run(['git','-C',str(repo),*argv],capture_output=True,check=True).stdout
 def mapped(path):
  pack,rest=path.split('/',1)
@@ -65,7 +76,7 @@ def plan(repo,ref,root=ROOT):
   if not path.startswith(('pstack/','cursor-team-kit/')) or '..' in Path(path).parts:raise ValueError('unsafe upstream path')
   old=(root/'upstream'/path).read_bytes() if (root/'upstream'/path).is_file() else None
   new=git(repo,'show',commit+':'+path) if path in paths else None
-  if new is not None:inventory.append({'path':path,'sha256':sha(new),'bytes':len(new)})
+  if new is not None:inventory.append(inventory_row(path,new))
   if old==new:continue
   target=mapped(path);current=(root/target).read_bytes() if target and (root/target).is_file() else None
   base=adapt(path,old) if old is not None else None;incoming=adapt(path,new) if new is not None else None
@@ -74,6 +85,7 @@ def plan(repo,ref,root=ROOT):
    merged,conflict=merge(current,base,incoming);action='conflict' if conflict else 'delete' if merged is None else 'merge' if current!=base else 'copy'
   else:merged=None;conflict=False;action='vendor-only'
   entries.append({'upstream_path':path,'target':target,'action':action,'old_sha':sha(old),'new_sha':sha(new),'current_sha':sha(current),'new_original':encode(new),'proposed':encode(merged),'incoming':encode(incoming) if conflict else None})
+ inventory.sort(key=lambda row:(0 if row['path'].startswith('pstack/') else 1,row['path']))
  return {'format':1,'repository':lock['repository'],'from_commit':lock['commit'],'to_commit':commit,'changes':entries,'inventory':inventory,'blockers':[e['upstream_path'] for e in entries if e['action'] in {'conflict','adapter-review'}],'required_behavior_review':[e['upstream_path'] for e in entries],'install_performed':False}
 
 def stage(doc,destination,root=ROOT):
@@ -91,7 +103,7 @@ def stage(doc,destination,root=ROOT):
    if not path.is_relative_to(root.resolve()):raise ValueError('unsafe mapped target')
    current=path.read_bytes() if path.is_file() else None
    if sha(current)!=e['current_sha']:raise ValueError('port changed after plan: '+e['target'])
- shutil.copytree(root,dest,ignore=shutil.ignore_patterns('__pycache__','.DS_Store'))
+ shutil.copytree(root,dest,ignore=shutil.ignore_patterns('__pycache__','.DS_Store','node_modules','.git','.upstream-update','upstream-history'))
  shutil.copytree(root/'upstream',dest/'upstream-history'/lock['commit'])
  for e in doc['changes']:
   archive=dest/'upstream'/e['upstream_path'];archive.parent.mkdir(parents=True,exist_ok=True)
@@ -108,9 +120,17 @@ def stage(doc,destination,root=ROOT):
  lock.update({'commit':doc['to_commit'],'previous_commit':doc['from_commit'],'update_status':'requires_behavior_review'})
  version=json.loads((dest/'upstream/pstack/.cursor-plugin/plugin.json').read_text())['version'];lock['pstack_version']=version
  (dest/'UPSTREAM.lock.json').write_text(json.dumps(lock,indent=2)+'\n')
+ adapter_version=None
  for manifest in [dest/'plugin.json',dest/'.codex-plugin/plugin.json']:
   if not manifest.exists():continue
-  meta=json.loads(manifest.read_text());n=int(meta['version'].rsplit('.',1)[-1]);meta['version']=version+'-openai.'+str(n+1);meta['homepage']=doc['repository']+'/tree/'+doc['to_commit']+'/pstack';manifest.write_text(json.dumps(meta,indent=2)+'\n')
+  meta=json.loads(manifest.read_text())
+  if adapter_version is None:adapter_version=version+'-openai.'+str(int(meta['version'].rsplit('.',1)[-1])+1)
+  meta['version']=adapter_version;manifest.write_text(json.dumps(meta,indent=2)+'\n')
+ for manifest in [dest/'runtime/package.json',dest/'runtime/package-lock.json']:
+  if not manifest.exists() or adapter_version is None:continue
+  meta=json.loads(manifest.read_text());meta['version']=adapter_version
+  if 'packages' in meta:meta['packages']['']['version']=adapter_version
+  manifest.write_text(json.dumps(meta,indent=2)+'\n')
  (dest/'references').mkdir(exist_ok=True)
  (dest/'.upstream-update').mkdir(exist_ok=True);(dest/'.upstream-update/plan.json').write_text(json.dumps(doc,indent=2)+'\n');(dest/'references/upstream-inventory.json').write_text(json.dumps({'repository':doc['repository'],'commit':doc['to_commit'],'pstack_version':version,'files':doc['inventory']},indent=2)+'\n')
  return {'candidate':str(dest),'pin':doc['to_commit'],'blockers':doc['blockers'],'next':'Review semantic changes/conflicts, run runtime and installed workflow tests, write UPDATE-REVIEW.json with evidence, then install via runtime/install.py. Live configuration, marketplace and state were never changed.'}
