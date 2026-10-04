@@ -1,0 +1,7 @@
+{
+  "adapter": "pstack-openai-personal",
+  "format": 1,
+  "runtime_state": "outside plugin cache",
+  "upstream_update": "runtime/upstream_sync.py",
+  "semantic_review_required": true
+}

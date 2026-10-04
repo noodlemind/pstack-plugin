@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "SessionStart": [{"matcher":"startup|resume|clear|compact","hooks":[{"type":"command","command":"python3 \"${PLUGIN_ROOT}/hooks/lifecycle.py\"","timeout":10,"additionalContextLimit":1500,"statusMessage":"Loading pstack state"}]}],
+    "UserPromptSubmit": [{"hooks":[{"type":"command","command":"python3 \"${PLUGIN_ROOT}/hooks/lifecycle.py\"","timeout":10,"additionalContextLimit":1500}]}],
+    "PreCompact": [{"hooks":[{"type":"command","command":"python3 \"${PLUGIN_ROOT}/hooks/lifecycle.py\"","timeout":10}]}],
+    "Interrupt": [{"hooks":[{"type":"command","command":"python3 \"${PLUGIN_ROOT}/hooks/lifecycle.py\"","timeout":3}]}],
+    "SessionEnd": [{"hooks":[{"type":"command","command":"python3 \"${PLUGIN_ROOT}/hooks/lifecycle.py\"","timeout":3}]}],
+    "Stop": [{"hooks":[{"type":"command","command":"python3 \"${PLUGIN_ROOT}/hooks/lifecycle.py\"","timeout":30}]}]
+  }
+}

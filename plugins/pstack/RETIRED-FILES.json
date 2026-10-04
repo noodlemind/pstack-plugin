@@ -1,0 +1,65 @@
+{
+  "reason": "Remove the rejected internet bridge and remote account setup; native execution replaces it.",
+  "files": [
+    {
+      "path": "mcp.json",
+      "sha256": "232673329c3e97a7c96ebef29e39b06ffc3734efb7e5eb9275f8f5caf8fd362e"
+    },
+    {
+      "path": "HTTPS-DEPLOYMENT.json",
+      "sha256": "82f9adf3eb3c52e8baa2949a9bdf4de3abf9a5274f581390726f5fda12856bd9"
+    },
+    {
+      "path": "runtime/http_bridge.py",
+      "sha256": "348d6171328b19b015cc0e3c3407c6b9bbcb0d6b66462d4d46454d7e6c7a3d13"
+    },
+    {
+      "path": "runtime/https_relay.py",
+      "sha256": "97b433b0e6262def1a0b067aa415c49a6e7e8bd176a43b72e6c6416aff6517bd"
+    },
+    {
+      "path": "runtime/https_service.py",
+      "sha256": "49b54be6ee4b55f0c93e12797f5bedcddc07f892cf3fe9cf0a803b6f07b37f8e"
+    },
+    {
+      "path": "runtime/install_remote.py",
+      "sha256": "2f8205b103a3141f8e4bcd83af31eb06fd9d82e6005fe3804485f0598a1ca6ac"
+    },
+    {
+      "path": "runtime/remote-requirements.txt",
+      "sha256": "aee7ed7ff1ab3b197e75838eef1ebd21881898e9db1f5268206f0eb02c4d0db7"
+    },
+    {
+      "path": "runtime/remote_server.py",
+      "sha256": "1cdf4b524d706209b7bd11089f042d87d0756b40c71e51229f0b566d7a7a7717"
+    },
+    {
+      "path": "runtime/remote_oauth.py",
+      "sha256": "afb7da140de505328709494840951bb82bdc6e3719c0a3830c8251beb5e6574b"
+    },
+    {
+      "path": "runtime/remote_events.py",
+      "sha256": "539786e29ce9c24323b16c14bdab856b7fad6599dddb96aae859dcc515b612e4"
+    },
+    {
+      "path": "runtime/remote_policy.py",
+      "sha256": "85ce6cd7c7115076f9f44fd7e6acdebd2966c3e5082d7e5ec9881ff7e7f28e19"
+    },
+    {
+      "path": "runtime/https/Dockerfile",
+      "sha256": "1b135948cf79a5acc1c453bcaae6bc711b8d05d84a86f4a9032ed7d6070e5a75"
+    },
+    {
+      "path": "runtime/https/requirements.txt",
+      "sha256": "27be5be6328933d1adac857fec13c8ee37d1c87b4c8f72841d01df458e137185"
+    },
+    {
+      "path": "tests/test_remote.py",
+      "sha256": "30e7701bcc44caa8460697ef06766e51d80a766ba940c52d49de3287dd209fc2"
+    },
+    {
+      "path": "tests/test_https_relay.py",
+      "sha256": "ca3e6e3e93bcf2d63c37c05f8495c4c061074498231cb3e478f73c842ca4d0e5"
+    }
+  ]
+}

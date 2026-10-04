@@ -1,0 +1,32 @@
+# Local execution state and secrets
+.env
+.env.*
+!.env.example
+credentials/
+*.key
+*.pem
+*.p12
+*.pfx
+*.sqlite
+*.sqlite-*
+*.db
+.pstack-state/
+.pstack-data/
+private/
+install-backups/
+# Personal transcripts and evidence do not belong in this source repository.
+evidence/
+current-evidence/
+*.jsonl
+*.log
+*.har
+*.webm
+*.mp4
+*.zip
+# Dependencies and generated files
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+.artifacts/
+.tools/

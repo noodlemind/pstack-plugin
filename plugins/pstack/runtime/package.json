@@ -1,0 +1,9 @@
+{
+  "name": "pstack-controls",
+  "private": true,
+  "type": "module",
+  "version": "0.15.5-openai.6",
+  "dependencies": {
+    "playwright": "1.63.0"
+  }
+}

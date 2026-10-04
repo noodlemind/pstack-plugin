@@ -1,0 +1,28 @@
+{
+  "name": "pstack",
+  "version": "0.15.5-openai.6",
+  "description": "Independent Codex adaptation of Lauren Tan (poteto)\u2019s pstack: native workflows, explicit user setup, durable verification and recovery.",
+  "author": {
+    "name": "Lauren Tan (poteto), original pstack; pstack-plugin contributors, independent adaptation"
+  },
+  "homepage": "https://github.com/noodlemind/pstack-plugin",
+  "repository": "https://github.com/noodlemind/pstack-plugin",
+  "license": "MIT",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "pstack for Codex",
+    "shortDescription": "Rigorous engineering with persistent agents and verification",
+    "developerName": "pstack-plugin contributors; original pstack by Lauren Tan (poteto)",
+    "category": "Coding",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Use poteto-mode to implement and verify this change.",
+      "Configure pstack models and reasoning budgets."
+    ]
+  },
+  "skills": "./skills/"
+}
