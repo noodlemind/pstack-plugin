@@ -156,6 +156,20 @@ class HarnessTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             harnesses.catalog(self.store, [{'provider': 'anthropic', 'model': 'claude'}], 'fixture')
 
+    def test_native_configuration_retains_only_same_host_retired_choices(self):
+        harnesses.setup(self.store, 'local')
+        models = [{'provider': 'openai', 'model': 'host-a', 'efforts': ['medium']}]
+        harnesses.catalog(self.store, models, 'fixture')
+        roles = {role: ['host-a'] for role in providers.ROLES}
+        configure = lambda choices: harnesses.configure_native(self.store, choices, 'explicit fixture choices')
+        configure({**roles, 'architect runners': ['host-a', 'host-a']})
+        updated = configure(roles)
+        self.assertEqual(updated['roles'], roles)
+        self.assertEqual(updated['retired_roles'], {'architect runners': ['host-a', 'host-a']})
+        with patch.dict(os.environ, {'PSTACK_EXECUTION_HOST': 'cloud'}):
+            harnesses.catalog(self.store, models, 'cloud fixture')
+            self.assertNotIn('retired_roles', configure(roles))
+
     def test_native_budget_and_roles_persist_without_touching_legacy_choices(self):
         original = {'budget': 'unlimited', 'roles': {'review': [{'family': 'anthropic', 'model': 'saved'}]}}
         self.store.put('config', 'models', original)
@@ -225,6 +239,29 @@ class HarnessTests(unittest.TestCase):
         self.assertIn('recorded by coordinator', row['origin'])
         other = self.root / 'other'; other.mkdir()
         self.assertEqual(API(self.store).call('pstack_checkpoint', 'recover', {'workspace': str(other)})['native_jobs'], [])
+
+    def test_upgrade_checks_local_edits_before_overwriting_and_preserves_executable_mode(self):
+        source, target, baseline, backup = (self.root / name for name in ('source', 'target', 'baseline', 'backup'))
+        for directory in (source, target, baseline, backup):
+            directory.mkdir()
+        (baseline / 'run').write_text('old')
+        (source / 'run').write_text('new')
+        (source / 'run').chmod(0o755)
+        (target / 'run').write_text('my edit')
+        with self.assertRaisesRegex(ValueError, 'installed file changed'):
+            install.sync_source(source, target, backup, baseline)
+        self.assertEqual((target / 'run').read_text(), 'my edit')
+        self.assertFalse((backup / 'plugin-source').exists())
+
+        (target / 'run').write_text('old')
+        (target / 'personal').write_text('keep')
+        (source / '.upstream-update').mkdir()
+        (source / '.upstream-update' / 'private-summary').write_text('fixture')
+        install.sync_source(source, target, backup, baseline)
+        self.assertEqual((target / 'run').read_text(), 'new')
+        self.assertTrue(os.access(target / 'run', os.X_OK))
+        self.assertEqual((target / 'personal').read_text(), 'keep')
+        self.assertFalse((target / '.upstream-update').exists())
 
     def test_retirement_removes_only_the_expected_owned_file(self):
         source = self.root / 'source'; source.mkdir()

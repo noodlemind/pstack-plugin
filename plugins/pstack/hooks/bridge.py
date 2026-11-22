@@ -4,8 +4,8 @@
 from pathlib import Path
 import json,subprocess,sys,tomllib
 
-def relay(home: Path, payload: str) -> tuple[int,str,str]:
-    config=home/'.codex/config.toml'
+def relay(home: Path, payload: str, *, config_dir: Path | None = None) -> tuple[int,str,str]:
+    config=(config_dir or home/'.codex')/'config.toml'
     source=home/'.codex/plugins/pstack/hooks/lifecycle.py'
     marketplace=home/'.agents/plugins/marketplace.json'
     settings=tomllib.loads(config.read_text()) if config.is_file() else {}
@@ -17,7 +17,7 @@ def relay(home: Path, payload: str) -> tuple[int,str,str]:
 
 if __name__=='__main__':
     try:
-        code,output,error=relay(Path.home(),sys.stdin.read())
+        code,output,error=relay(Path.home(),sys.stdin.read(),config_dir=Path(__file__).resolve().parent.parent)
         sys.stdout.write(output);sys.stderr.write(error);raise SystemExit(code)
     except Exception as e:
         print(json.dumps({'systemMessage':'pstack hook bridge failed: '+str(e)}));raise SystemExit(1)

@@ -11,6 +11,7 @@ import os
 import platform
 import shutil
 
+from model_roles import PANELS, preserve_retired_choices, validate_roles
 from store import Store, now, workspace
 
 
@@ -150,18 +151,26 @@ def budget(store: Store, budget: str, confirmation: str) -> dict:
     return store.put("config", "native_budget", value)
 
 
-def configure_native(store: Store, roles: dict, confirmation: str,
-                     allowed_roles: list[str], panel_roles: set[str]) -> dict:
-    if not confirmation.strip() or set(roles) != set(allowed_roles):
+def configure_native(store: Store, roles: dict, confirmation: str) -> dict:
+    if not confirmation.strip():
         raise ValueError("explicit choices for every native role are required")
+    validate_roles(roles)
     available = {m["model"] for m in current_catalog(store).get("models", [])}
     for role, seats in roles.items():
-        if not isinstance(seats, list) or not 1 <= len(seats) <= 16 or (role not in panel_roles and len(seats) != 1):
+        if not isinstance(seats, list) or not 1 <= len(seats) <= 16 or (role not in PANELS and len(seats) != 1):
             raise ValueError("invalid native role seats: " + role)
         if any(not isinstance(model, str) or model not in available for model in seats):
             raise ValueError("native role model is absent from this host's current catalog")
     value = {"roles": roles, "confirmation": confirmation, "machine": fingerprint(),
              "host": settings(store)["host"], "updated": now()}
+    try:
+        previous = store.get("config", "native_models")
+    except KeyError:
+        previous = {}
+    if previous.get("machine") == value["machine"] and previous.get("host") == value["host"]:
+        retired = preserve_retired_choices(previous, roles)
+        if retired:
+            value["retired_roles"] = retired
     store.event("native_role_configuration", value)
     return store.put("config", "native_models", value)
 

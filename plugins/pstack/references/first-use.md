@@ -17,7 +17,7 @@ python3 plugins/pstack/runtime/pstack.py call pstack_environment preferences '{}
 
 The first command reports `requires_budget_choice: true` for a fresh user. The second is an explicit user choice; replace `small` with your preference. In a cloud host use `--host cloud`; do not copy a local machine's configuration or logins there. If the host does not expose model selection or native scheduling, the plugin reports that limit.
 
-Python 3.11+ and Git are required for helpers and verification. Bun is needed for the preserved orchestration/watch tools; install their dependencies from the bundled lockfile before using them. Node 20+, Playwright and a browser are needed only for optional local browser controls. Host-native browser/terminal tools remain preferred. The source repository excludes installed dependencies.
+Python 3.11+ and Git are required for helpers and verification. For the optional PR watcher, install Bun and its dependencies from the bundled lockfile. For `statechart`, use Node 22.18 or later in the 22.x series, Node 23.6+, Bun 1.1.5+, or Deno 2+. A live model check uses Java and TLC. The runner can install them with mise or use an existing TLC JAR via `TLA2TOOLS` and a Java runtime via `JAVA`. On Windows, use the Node entry point described in the statechart skill. Node 20+, Playwright and a browser are needed only for optional local browser controls. Host-native browser/terminal tools remain preferred. The source repository excludes installed dependencies.
 
 ## Personal or project use
 

@@ -16,9 +16,8 @@ import threading
 
 from store import ROOT, Store, now, data_home, VERSION
 import harnesses
+from model_roles import PANELS, ROLES, preserve_retired_choices, validate_roles
 
-ROLES = ["feature, refactoring", "bug-fix", "perf-issue", "hillclimb", "judgment and prose", "hardest tasks", "how explorer", "how explainer", "why investigators", "why synthesizer", "reflect tooling", "reflect judgment, divergent, synthesizer", "arena runners", "arena cross-judge pool", "swarm workers", "architect runners", "interrogate reviewers"]
-PANELS = {"arena runners", "arena cross-judge pool", "architect runners", "interrogate reviewers"}
 EFFORTS = ["low", "medium", "high", "xhigh", "max", "ultra"]
 BUDGETS = {"unlimited": "max", "large": "xhigh", "medium": "high", "small": "medium"}
 # Observed and rechecked with Grok Build 1.0.46. This is an explicit CLI selector
@@ -275,8 +274,7 @@ def probe(store: Store, provider: str, model: str, effort: str = "medium") -> di
 def configure(store: Store, budget: str, roles: dict, confirmation: str) -> dict:
     if budget not in BUDGETS or not confirmation.strip():
         raise ValueError("a user-selected budget and confirmation are required")
-    if set(roles) != set(ROLES):
-        raise ValueError("configure every upstream role; missing " + str(set(ROLES) - set(roles)))
+    validate_roles(roles)
     catalog = {x["key"]: x for x in store.list("model")}
     mapped = {}
     for role, values in roles.items():
@@ -297,6 +295,13 @@ def configure(store: Store, budget: str, roles: dict, confirmation: str) -> dict
             seats.append({"provider": entry["provider"], "model": entry["model"], "family": entry["family"], "effort": max(choices, key=EFFORTS.index)})
         mapped[role] = seats
     config = {"budget": budget, "roles": mapped, "confirmed_by_user": confirmation, "updated": now()}
+    try:
+        previous = store.get("config", "models")
+    except KeyError:
+        previous = {}
+    retired = preserve_retired_choices(previous, mapped)
+    if retired:
+        config["retired_roles"] = retired
     store.event("configuration", config)
     return store.put("config", "models", config)
 

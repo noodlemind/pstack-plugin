@@ -1,6 +1,6 @@
 # pstack for Codex
 
-An independent, experimental Codex adaptation of **[pstack by Lauren Tan (poteto)](https://github.com/cursor/plugins/tree/e43c7ee26e0038c6c1fa8380dd34ce86ff94cb2a/pstack)**. Lauren's engineering principles and workflows are the foundation; this repository supplies host compatibility, explicit setup, durable state, verification helpers and a reviewable update path. [Attribution and licenses](NOTICE.md).
+An independent, experimental Codex adaptation of **[pstack by Lauren Tan (poteto)](https://github.com/cursor/plugins/tree/7a583913eb1b8d1a0ee76753d1a2cf072e7b54f9/pstack)**. Lauren's engineering principles and workflows are the foundation; this repository supplies host compatibility, explicit setup, durable state, verification helpers and a reviewable update path. [Attribution and licenses](NOTICE.md).
 
 The intended value is consistent, verifiable operation across coding environments. Native host tools work by default; supported local CLIs require explicit selection. Direct provider APIs and OpenRouter are planned, not available in this release. Passing local tests does not establish full upstream equivalence or greater reliability than another port.
 
@@ -45,6 +45,6 @@ The repository contains source and synthetic tests, not personal configuration, 
 
 ## Status and development
 
-Adapter version **0.15.9-openai.8** pins upstream **0.15.9** at `e43c7ee26e0038c6c1fa8380dd34ce86ff94cb2a`. The bundle preserves 74 skills, 23 playbooks, four agent roles and the Benny automation procedures. Preservation alone does not establish full behavioral equivalence. This release imports all 21 changed upstream files, including `/correct`, `/benchmark-checklist`, the Explain the Number principle, fresh-agent guidance and hourly audit procedures. See the [update review](docs/upstream-0.15.9.md).
+Adapter version **0.15.46-openai.9** pins upstream **0.15.46** at `7a583913eb1b8d1a0ee76753d1a2cf072e7b54f9`. The package includes 82 installed skills and 22 playbooks. This update brings the TLA+ statechart compiler, formal verification skills, status briefings and the upstream move to agent-led orchestration. See the [update review](docs/upstream-0.15.46.md) for compatibility changes and verification.
 
 [Coverage](plugins/pstack/references/behavior-coverage.md) distinguishes tested behavior from live cloud, native scheduling, cross-provider and team-integration gaps. [Verification](docs/verification.md) describes reproducible checks. [Roadmap](ROADMAP.md) and GitHub issues track remaining work. [Contributing](CONTRIBUTING.md) explains reviews and releases; [upstream updates](plugins/pstack/references/upstream-updates.md) explains how to absorb changes without discarding the port.

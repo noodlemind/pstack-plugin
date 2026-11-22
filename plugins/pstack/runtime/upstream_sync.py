@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse,base64,hashlib,json,re,shutil,subprocess,tempfile
 from pathlib import Path
+from playbooks import playbook_steps
 ROOT=Path(__file__).resolve().parents[1]
 HEADER='\n## OpenAI runtime contract\n\nRead [the adapter contract](../../references/runtime-contract.md) before this workflow. It maps provider selection, agent calls, loops, persistent state, history, verification, and authorization. That contract supersedes Cursor-specific execution syntax and unverified model fallbacks below; the engineering steps remain required. Use native tools in the current host; cloud uses available OpenAI models. Never create a remote laptop connection or require a URL/MCP setup.\n'
 OWNED={'skills/setup-pstack/SKILL.md','skills/make-bot-ui/SKILL.md','README.md','plugin.json','.codex-plugin/plugin.json'}
@@ -20,7 +21,7 @@ def inventory_row(path,data):
   description=re.search(r'^description: (.*)$',text,re.M)
   row['description']=description.group(1) if description else ''
  elif '/playbooks/' in path:
-  row.update(kind='playbook',steps=re.findall(r'^\d+\. (.*)',text,re.M))
+  row.update(kind='playbook',steps=playbook_steps(text))
  else:
   row['kind']=next(
    (kind for part,kind in [('agents','agent'),('rules','rule'),('scripts','runtime')]
@@ -29,6 +30,59 @@ def inventory_row(path,data):
   )
  return row
 def git(repo,*argv):return subprocess.run(['git','-C',str(repo),*argv],capture_output=True,check=True).stdout
+
+def tree_modes(repo,commit):
+ raw=git(repo,'ls-tree','-r','-z',commit,'--','pstack','cursor-team-kit')
+ modes={}
+ for entry in raw.split(b'\0'):
+  if not entry:continue
+  metadata,path=entry.decode().split('\t',1)
+  mode,kind,_=metadata.split()
+  if kind!='blob' or mode not in {'100644','100755'}:
+   raise ValueError('unsupported upstream file type: '+path)
+  modes[path]=mode
+ return modes
+
+def file_mode(path):
+ if not path.is_file():return None
+ return '100755' if path.stat().st_mode & 0o100 else '100644'
+
+def write_blob(path,encoded,mode):
+ if mode not in {'100644','100755'}:raise ValueError('invalid Git file mode')
+ path.write_bytes(base64.b64decode(encoded))
+ permissions=path.stat().st_mode & 0o777
+ execute_bits=(permissions & 0o444) >> 2 if mode=='100755' else 0
+ path.chmod((permissions & ~0o111) | execute_bits)
+
+def record_retirements(dest,changes):
+ # The private staging plan is excluded from published plugin installations.
+ path=dest/'RETIRED-FILES.json'
+ document=json.loads(path.read_text()) if path.exists() else {'files':[]}
+ rows={row['path']:row for row in document['files']}
+ retired={}
+ for change in changes:
+  archive='upstream/'+change['upstream_path']
+  if change['new_original'] is None:
+   retired[archive]=change['old_sha']
+  else:
+   rows.pop(archive,None)
+  target=change['target']
+  if target and (dest/target).is_file():
+   rows.pop(target,None)
+  elif target and change['action']=='delete' and change['current_sha'] is not None:
+   retired[target]=change['current_sha']
+ for relative,digest in sorted(retired.items()):
+  previous=rows.get(relative)
+  row={'path':relative,'sha256':digest}
+  if previous:
+   hashes={previous['sha256'],*previous.get('previous_sha256',[])}-{digest}
+   if hashes:row['previous_sha256']=sorted(hashes)
+  rows[relative]=row
+ if list(rows.values())!=document['files']:
+  document['reason']='Remove retired, byte-matched package files from previous installations.'
+  document['files']=list(rows.values())
+  path.write_text(json.dumps(document,indent=2)+'\n')
+
 def mapped(path):
  pack,rest=path.split('/',1)
  if rest.startswith('agents/') and rest.endswith('.md'):return 'skills/agent-'+Path(rest).stem+'/SKILL.md'
@@ -73,31 +127,45 @@ def merge(ours,base,incoming):
 def plan(repo,ref,root=ROOT):
  lock=json.loads((root/'UPSTREAM.lock.json').read_text());commit=git(repo,'rev-parse',ref+'^{commit}').decode().strip()
  # Only blobs under these two packs are consumed; no upstream code is executed.
- raw=git(repo,'ls-tree','-r','--name-only','-z',commit,'--','pstack','cursor-team-kit');paths=[x.decode() for x in raw.split(b'\0') if x]
+ modes=tree_modes(repo,commit)
  old_paths=[str(p.relative_to(root/'upstream')) for p in (root/'upstream').rglob('*') if p.is_file()]
  targets={}
- for path in sorted(set(paths)|set(old_paths)):
+ all_paths=sorted(set(modes)|set(old_paths))
+ for path in all_paths:
   target=mapped(path)
   if target and target in targets and targets[target]!=path:raise ValueError('upstream mapping collision needs explicit adapter review: '+target)
   if target:targets[target]=path
  entries=[];inventory=[]
- for path in sorted(set(paths)|set(old_paths)):
+ for path in all_paths:
   if not path.startswith(('pstack/','cursor-team-kit/')) or '..' in Path(path).parts:raise ValueError('unsafe upstream path')
-  old=(root/'upstream'/path).read_bytes() if (root/'upstream'/path).is_file() else None
-  new=git(repo,'show',commit+':'+path) if path in paths else None
-  if new is not None:inventory.append(inventory_row(path,new))
-  if old==new:continue
-  target=mapped(path);current=(root/target).read_bytes() if target and (root/target).is_file() else None
+  archive=root/'upstream'/path
+  old_mode=file_mode(archive)
+  new_mode=modes.get(path)
+  old=archive.read_bytes() if old_mode is not None else None
+  new=git(repo,'show',commit+':'+path) if new_mode is not None else None
+  if new is not None:inventory.append(inventory_row(path,new)|{'git_mode':new_mode})
+  target=mapped(path)
+  current_mode=file_mode(root/target) if target else None
+  unchanged=old==new and old_mode==new_mode
+  if unchanged and (not target or current_mode is not None):continue
+  current=(root/target).read_bytes() if current_mode is not None else None
   base=adapt(path,old) if old is not None else None;incoming=adapt(path,new) if new is not None else None
+  proposed_mode=current_mode
   if target in OWNED or path.endswith('/LICENSE'):merged=current;conflict=True;action='adapter-review'
+  elif unchanged:
+   merged=incoming;proposed_mode=new_mode;conflict=False;action='restore'
   elif target:
-   merged,conflict=merge(current,base,incoming);action='conflict' if conflict else 'delete' if merged is None else 'merge' if current!=base else 'copy'
+   merged,conflict=merge(current,base,incoming)
+   if current_mode==old_mode:proposed_mode=new_mode
+   elif new_mode!=old_mode and current_mode!=new_mode:conflict=True
+   action='conflict' if conflict else 'delete' if merged is None else 'merge' if current!=base else 'copy'
   else:merged=None;conflict=False;action='vendor-only'
-  entries.append({'upstream_path':path,'target':target,'action':action,'old_sha':sha(old),'new_sha':sha(new),'current_sha':sha(current),'new_original':encode(new),'proposed':encode(merged),'incoming':encode(incoming) if conflict else None})
+  entries.append({'upstream_path':path,'target':target,'action':action,'old_sha':sha(old),'new_sha':sha(new),'current_sha':sha(current),'old_mode':old_mode,'new_mode':new_mode,'current_mode':current_mode,'proposed_mode':proposed_mode,'new_original':encode(new),'proposed':encode(merged),'incoming':encode(incoming) if conflict else None})
  inventory.sort(key=lambda row:(0 if row['path'].startswith('pstack/') else 1,row['path']))
- return {'format':1,'repository':lock['repository'],'from_commit':lock['commit'],'to_commit':commit,'changes':entries,'inventory':inventory,'blockers':[e['upstream_path'] for e in entries if e['action'] in {'conflict','adapter-review'}],'required_behavior_review':[e['upstream_path'] for e in entries],'install_performed':False}
+ return {'format':2,'repository':lock['repository'],'from_commit':lock['commit'],'to_commit':commit,'changes':entries,'inventory':inventory,'blockers':[e['upstream_path'] for e in entries if e['action'] in {'conflict','adapter-review'}],'required_behavior_review':[e['upstream_path'] for e in entries],'install_performed':False}
 
 def stage(doc,destination,root=ROOT):
+ if doc.get('format')!=2:raise ValueError('regenerate the update plan to include Git file modes')
  dest=Path(destination).resolve()
  if dest.exists() or dest.is_relative_to(root) or '.codex/plugins' in str(dest):raise ValueError('stage needs a new directory outside source and installed plugin paths')
  lock=json.loads((root/'UPSTREAM.lock.json').read_text())
@@ -105,19 +173,19 @@ def stage(doc,destination,root=ROOT):
  for e in doc['changes']:
   archive=(root/'upstream'/e['upstream_path']).resolve()
   if not archive.is_relative_to((root/'upstream').resolve()):raise ValueError('unsafe upstream archive target')
-  if sha(archive.read_bytes() if archive.is_file() else None)!=e['old_sha']:raise ValueError('upstream baseline changed after plan')
+  if sha(archive.read_bytes() if archive.is_file() else None)!=e['old_sha'] or file_mode(archive)!=e['old_mode']:raise ValueError('upstream baseline changed after plan')
   if sha(base64.b64decode(e['new_original']) if e['new_original'] is not None else None)!=e['new_sha']:raise ValueError('incoming archive digest mismatch')
   if e['target']:
    path=(root/e['target']).resolve()
    if not path.is_relative_to(root.resolve()):raise ValueError('unsafe mapped target')
    current=path.read_bytes() if path.is_file() else None
-   if sha(current)!=e['current_sha']:raise ValueError('port changed after plan: '+e['target'])
+   if sha(current)!=e['current_sha'] or file_mode(path)!=e['current_mode']:raise ValueError('port changed after plan: '+e['target'])
  shutil.copytree(root,dest,ignore=shutil.ignore_patterns('__pycache__','.DS_Store','node_modules','.git','.upstream-update','upstream-history'))
  shutil.copytree(root/'upstream',dest/'upstream-history'/lock['commit'])
  for e in doc['changes']:
   archive=dest/'upstream'/e['upstream_path'];archive.parent.mkdir(parents=True,exist_ok=True)
   if e['new_original'] is None:archive.unlink(missing_ok=True)
-  else:archive.write_bytes(base64.b64decode(e['new_original']))
+  else:write_blob(archive,e['new_original'],e['new_mode'])
   if not e['target']:continue
   target=dest/e['target'];target.parent.mkdir(parents=True,exist_ok=True)
   if e['action'] in {'conflict','adapter-review'}:
@@ -125,7 +193,8 @@ def stage(doc,destination,root=ROOT):
    if e.get('incoming') is not None:Path(str(conflict)+'.incoming').write_bytes(base64.b64decode(e['incoming']))
    if e.get('proposed') is not None:Path(str(conflict)+'.proposed').write_bytes(base64.b64decode(e['proposed']))
   elif e['proposed'] is None:target.unlink(missing_ok=True)
-  else:target.write_bytes(base64.b64decode(e['proposed']))
+  else:write_blob(target,e['proposed'],e['proposed_mode'])
+ record_retirements(dest,doc['changes'])
  lock.update({'commit':doc['to_commit'],'previous_commit':doc['from_commit'],'update_status':'requires_behavior_review'})
  version=json.loads((dest/'upstream/pstack/.cursor-plugin/plugin.json').read_text())['version'];lock['pstack_version']=version
  (dest/'UPSTREAM.lock.json').write_text(json.dumps(lock,indent=2)+'\n')

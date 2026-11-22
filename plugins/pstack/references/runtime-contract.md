@@ -1,6 +1,6 @@
 # pstack execution contract
 
-Use the coding host in which this task is running. The plugin contains skills, hooks and local helper scripts. It does not register an MCP server, expose HTTP endpoints, install login services or connect a cloud task to a personal computer. Its original engineering steps, 23 playbooks, principles and MIT attribution remain under `skills/` and `upstream/`.
+Use the coding host in which this task is running. The plugin contains skills, hooks and local helper scripts. It does not register an MCP server, expose HTTP endpoints, install login services or connect a cloud task to a personal computer. Its original engineering steps, 22 playbooks, principles and MIT attribution remain under `skills/` and `upstream/`.
 
 ## Environment and setup
 
@@ -40,15 +40,17 @@ The optional CLI runtime's strict cross-provider shipping gate remains available
 
 At every pstack task/turn/recovery boundary, read `pstack_context`. Activate mode only on an explicit user request; scope it to a session, or to the workspace if requested. Sticky state survives turns and compaction. Trusted read/context hooks may restore it; otherwise call the helper explicitly. Do not assume cloud command hooks are available. Casual conversation and explicit opt-out bypass the engineering workflow.
 
-Read the selected playbook and referenced leaf principles. Start its actual numbered steps with `pstack_task start`; retain every skipped step with its reason. Read artifacts and reproduce claims, attack premises when evidence warrants it, favor root causes and small verifiable units, isolate ownership before coordinating, and retain actual decision/verification receipts. The original instructions remain preserved; host-specific execution syntax and hardcoded model defaults yield to this contract.
+Read the selected playbook and referenced leaf principles. Start its actionable steps with `pstack_task start`; retain every skipped step with its reason. Read artifacts and reproduce claims, attack premises when evidence warrants it, favor root causes and small verifiable units, isolate ownership before coordinating, and retain actual decision/verification receipts. The original instructions remain preserved; host-specific execution syntax and hardcoded model defaults yield to this contract.
 
 Persistent helper state lives in the current execution environment outside the plugin cache. For an ephemeral cloud environment, export a secret-free project checkpoint and verification artifacts to the host's durable task/artifact storage before termination. A stopped container cannot keep running or preserve an unexported SQLite store. Recovery must reverify the repository and proof at the current head. Never scan unrelated personal histories.
+
+New orchestrated work uses native task, decision and checkpoint records. Existing `orchestrate` mode records and program-scale requests resolve to the installed `figure-it-out` skill. An explicit multi-phase plan request still returns `multi-phase-plan`. The `pstack_orch` compatibility operation reads or refreshes the PR order in an existing frontier store via `frontier show` and `frontier set`. Other Bun orchestrator commands were retired upstream.
 
 ## Loops, integrations and authorizations
 
 A loop has an objective, explicit executable stop predicate, time/iteration budget, cancellation and failure conditions. Predicate failure is unfinished; exhausted budgets or missing proof are blocked. Do not relax the predicate. Native parent wakeups require supported scheduling; a saved checkpoint does not wake a host. Detached local CLI loops are optional and confined to the environment that started them. They are unavailable under the default native profile; prefer the host's own continuation facilities.
 
-Upstream 0.15.9 uses `/loop 1h` for the autopilot and multi-phase audit tick. In a Codex plan retain that upstream label and state its native hourly automation mapping. Create the schedule only for an authorized recurring run, through the host's automation tool, and record its actual identifier and cancellation operation. An unavailable scheduler is an explicit continuation gap, not a shell sleep, a checkpoint, or a claimed cloud wakeup. Do not create a goal solely because an upstream template once requested `/goal`. Audit ticks re-read the pinned adapted playbook from this repository's `plugins/pstack/` path (or the installed package in an unrelated project), inspect actual branch/check/agent progress, replace stuck work, and stay quiet when nothing changed.
+Autopilot-full calls for an hourly audit after the operator authorizes execution. Autopilot-stack inherits that audit and stops at verified, green PRs for operator handoff. Multi-phase-plan ends at delivery of the plan. For an authorized recurring run, use the host scheduler and record its identifier and cancellation operation. Each tick rereads the applicable adapted playbook, checks progress and reports changes. If the host cannot schedule a wakeup, record that limit.
 
 `correct` uses the current repository's commits, reviews, instruction files and scoped history. Do not search unrelated personal transcripts. Pair repeated mistake classes with enforceable checks and demonstrate their failure on a past mistake before claiming a correction. `benchmark-checklist` requires actual run/error/work evidence; use the operating system's available counters and profilers and report missing evidence as inconclusive. A discovered skill or a successful test of a helper does not prove an agent followed every judgment step.
 

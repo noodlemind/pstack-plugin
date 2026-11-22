@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.15.46-openai.9
+
+- Update to Lauren Tan’s pstack 0.15.46. Add statechart model checking, formal verification skill creation and maintenance, poteto-help, sharpen, in-your-own-words, ketchup and ketchup-video.
+- Follow upstream’s retirement of the Bun orchestrator, its playbook and the plan checker. Preserve existing frozen frontier data and give earlier callers a migration path.
+- Preserve upstream executable permissions during staging and cover the statechart launcher, PR watcher and published-package upgrade in verification. [Release review](docs/upstream-0.15.46.md).
+
 ## 0.15.9-openai.8
 
 - Import upstream pstack 0.15.9 at `e43c7ee26e0038c6c1fa8380dd34ce86ff94cb2a`; preserve all 190 originals and both MIT notices.
