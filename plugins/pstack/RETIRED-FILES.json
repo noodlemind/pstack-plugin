@@ -1,5 +1,5 @@
 {
-  "reason": "Remove the rejected internet bridge and remote account setup; native execution replaces it.",
+  "reason": "Remove retired, byte-matched package files from previous installations.",
   "files": [
     {
       "path": "mcp.json",
@@ -60,6 +60,258 @@
     {
       "path": "tests/test_https_relay.py",
       "sha256": "ca3e6e3e93bcf2d63c37c05f8495c4c061074498231cb3e478f73c842ca4d0e5"
+    },
+    {
+      "path": "skills/architect/references/design-red-flags.md",
+      "sha256": "d0e639e4cc588ec865f930d3a4111faad60987ae36925917e319d7ceca7c69ce",
+      "previous_sha256": [
+        "905066f9bbac81c573c2b325be47751d2c0f9325e0a0772bd4384e82dafe9336"
+      ]
+    },
+    {
+      "path": "skills/architect/references/rationale-template.md",
+      "sha256": "0cedfccdc7b47fc881febd5a8293eecbc542c20f8df825639904a8102d2eb5d3"
+    },
+    {
+      "path": "skills/architect/references/runner-prompt.md",
+      "sha256": "983bf2820cc14ed8ecab6e448e1033e5cfe6031967d0a9287b48c7fa9c33d925"
+    },
+    {
+      "path": "skills/how/references/explainer-prompt.md",
+      "sha256": "ddb89cebefc24e2b54517a331aedfe045b6971e101f45c71b8cef4cccff45bff"
+    },
+    {
+      "path": "skills/how/references/explorer-prompt.md",
+      "sha256": "a3b44a6e5bb16a6d4d1cac19db8ed5322ffd5f5f5d45baca4e73990ca096f8be"
+    },
+    {
+      "path": "skills/interrogate/references/code-quality-review.md",
+      "sha256": "79162fda183eafd40d51661fbb5e151c7ba250f89e506ba17f5bd135dcbd50a8"
+    },
+    {
+      "path": "skills/interrogate/references/lead-judgment.md",
+      "sha256": "6e5bdf5670eb34017692e9b6c546f36ac7552e6bb9f3f2f3429164fcc46a9361"
+    },
+    {
+      "path": "skills/interrogate/references/reviewer-prompt.md",
+      "sha256": "e0598e254792b56de39bb16b1e6db559b03a522fdc54b98f942d254090920ae6"
+    },
+    {
+      "path": "skills/interrogate/references/rubric.md",
+      "sha256": "a85aa801abbaf14434f00579440abc0d8e2723227ba8bf57de7cca8d6e7d2f25"
+    },
+    {
+      "path": "skills/poteto-mode/playbooks/orchestrate.md",
+      "sha256": "d42b4375f1bd4ce23da0b575a198571a2117df7eea10c3c9fc6d92ae1053f7be"
+    },
+    {
+      "path": "skills/poteto-mode/scripts/check-plan.mjs",
+      "sha256": "4f9432d9989880b6afc2bdda503d5b12a9d07d357ecf31936b7ab5e83bc80523",
+      "previous_sha256": [
+        "1f9e788ce90a13a9973e35e8c3a52737857c375e057bdccc13c8510a9af30f04"
+      ]
+    },
+    {
+      "path": "skills/poteto-mode/scripts/orch/orch.test.ts",
+      "sha256": "174b86d21ff51ccd28d1a8c938cb2e0c6fa287b209d4ca6c03932fcb1b53372e"
+    },
+    {
+      "path": "skills/poteto-mode/scripts/orch/orch.ts",
+      "sha256": "f091687df627a0b75fabd54af58945a9cd6c7039ef0622012ac9ed60cd8ec434"
+    },
+    {
+      "path": "skills/poteto-mode/scripts/orch/store.ts",
+      "sha256": "0eae7cf69282e827b1227166f2e32cee3560f2f3e65b3f1f2faf6fb83d3b4c5b"
+    },
+    {
+      "path": "skills/reflect/references/divergent-reviewer.md",
+      "sha256": "d3f2f81fab5e59f2ad4860c9c87d648e5f9c44c2b44eeb197fe9ae90d823f5b8"
+    },
+    {
+      "path": "skills/reflect/references/judgment-reviewer.md",
+      "sha256": "5f2b20fd0b348c4ce4bebab8ce8b0a826c87aabbc9492d902d1336e37d968c5b"
+    },
+    {
+      "path": "skills/reflect/references/synthesizer.md",
+      "sha256": "2f76c847eb45b182dc6fbcbf7d96c8ee7e2986ecfd9e0d640fec44e3cc5a617c"
+    },
+    {
+      "path": "skills/reflect/references/tooling-reviewer.md",
+      "sha256": "23fa39db5c6e68d15a1f5aeb39ba63ae38ba3e1bca759048ce2f9db7a5d12a98"
+    },
+    {
+      "path": "skills/why/references/epistemics.md",
+      "sha256": "fcc0f559c072832c869a5ada72434b4849320a637ae63c09e8ee14f7ad787059"
+    },
+    {
+      "path": "skills/why/references/investigator-prompt.md",
+      "sha256": "6892956a7ab0b5ee6c4babaf4f793703abe89b350ea7cb9463b4a56eea1c8266"
+    },
+    {
+      "path": "skills/why/references/source-playbook.md",
+      "sha256": "9ae9dcb9d09111c9facc68510331c5aba4aed9b1b057314ff1fc0e166ad3993a"
+    },
+    {
+      "path": "skills/why/references/sources/code-archaeology.md",
+      "sha256": "8c14aa382f0de40829b2668d43e3f54814480bb93a486c9282ada4003f6b9dbd"
+    },
+    {
+      "path": "skills/why/references/sources/databricks.md",
+      "sha256": "236ede7aab6454662a992db088a5393537a5233a4c26719c93188f9e174488f6"
+    },
+    {
+      "path": "skills/why/references/sources/datadog.md",
+      "sha256": "ebe9c07bac28e47757ee7f16fb93b0c01d427a08c501957d047f395a2f37b7e7"
+    },
+    {
+      "path": "skills/why/references/sources/incident-postmortem.md",
+      "sha256": "a899470f05f86029630a13a2696491cc708ca7b56a6e822a69ff6e954d6ff8cf"
+    },
+    {
+      "path": "skills/why/references/sources/linear.md",
+      "sha256": "01304e7f1badfcfb78babbb0edcadeb3cc8dd3f713793420cdff24ba190f907c"
+    },
+    {
+      "path": "skills/why/references/sources/notion.md",
+      "sha256": "3bcfa695c49dfad4ac036d5d7181c12585f55ac04f1936198d16ab75a2788997"
+    },
+    {
+      "path": "skills/why/references/sources/sentry.md",
+      "sha256": "6f292bc4fb1548e956f95e1900b9481abf5134254419f1cd9edec95428c82d73"
+    },
+    {
+      "path": "skills/why/references/sources/slack.md",
+      "sha256": "58fee61d024b3700b407e7acbed367944720ff05adfddb6954d36c88368f3ba7"
+    },
+    {
+      "path": "skills/why/references/synthesizer-prompt.md",
+      "sha256": "733a3e9cf897b1aca56aaddeae01a3832e4bfed024c2f602db2d1bf807d7a73b"
+    },
+    {
+      "path": "upstream/pstack/skills/architect/references/design-red-flags.md",
+      "sha256": "d0e639e4cc588ec865f930d3a4111faad60987ae36925917e319d7ceca7c69ce",
+      "previous_sha256": [
+        "905066f9bbac81c573c2b325be47751d2c0f9325e0a0772bd4384e82dafe9336"
+      ]
+    },
+    {
+      "path": "upstream/pstack/skills/architect/references/rationale-template.md",
+      "sha256": "0cedfccdc7b47fc881febd5a8293eecbc542c20f8df825639904a8102d2eb5d3"
+    },
+    {
+      "path": "upstream/pstack/skills/architect/references/runner-prompt.md",
+      "sha256": "983bf2820cc14ed8ecab6e448e1033e5cfe6031967d0a9287b48c7fa9c33d925"
+    },
+    {
+      "path": "upstream/pstack/skills/how/references/explainer-prompt.md",
+      "sha256": "ddb89cebefc24e2b54517a331aedfe045b6971e101f45c71b8cef4cccff45bff"
+    },
+    {
+      "path": "upstream/pstack/skills/how/references/explorer-prompt.md",
+      "sha256": "a3b44a6e5bb16a6d4d1cac19db8ed5322ffd5f5f5d45baca4e73990ca096f8be"
+    },
+    {
+      "path": "upstream/pstack/skills/interrogate/references/code-quality-review.md",
+      "sha256": "79162fda183eafd40d51661fbb5e151c7ba250f89e506ba17f5bd135dcbd50a8"
+    },
+    {
+      "path": "upstream/pstack/skills/interrogate/references/lead-judgment.md",
+      "sha256": "6e5bdf5670eb34017692e9b6c546f36ac7552e6bb9f3f2f3429164fcc46a9361"
+    },
+    {
+      "path": "upstream/pstack/skills/interrogate/references/reviewer-prompt.md",
+      "sha256": "e0598e254792b56de39bb16b1e6db559b03a522fdc54b98f942d254090920ae6"
+    },
+    {
+      "path": "upstream/pstack/skills/interrogate/references/rubric.md",
+      "sha256": "a85aa801abbaf14434f00579440abc0d8e2723227ba8bf57de7cca8d6e7d2f25"
+    },
+    {
+      "path": "upstream/pstack/skills/poteto-mode/playbooks/orchestrate.md",
+      "sha256": "d42b4375f1bd4ce23da0b575a198571a2117df7eea10c3c9fc6d92ae1053f7be"
+    },
+    {
+      "path": "upstream/pstack/skills/poteto-mode/scripts/check-plan.mjs",
+      "sha256": "4f9432d9989880b6afc2bdda503d5b12a9d07d357ecf31936b7ab5e83bc80523",
+      "previous_sha256": [
+        "1f9e788ce90a13a9973e35e8c3a52737857c375e057bdccc13c8510a9af30f04"
+      ]
+    },
+    {
+      "path": "upstream/pstack/skills/poteto-mode/scripts/orch/orch.test.ts",
+      "sha256": "174b86d21ff51ccd28d1a8c938cb2e0c6fa287b209d4ca6c03932fcb1b53372e"
+    },
+    {
+      "path": "upstream/pstack/skills/poteto-mode/scripts/orch/orch.ts",
+      "sha256": "f091687df627a0b75fabd54af58945a9cd6c7039ef0622012ac9ed60cd8ec434"
+    },
+    {
+      "path": "upstream/pstack/skills/poteto-mode/scripts/orch/store.ts",
+      "sha256": "0eae7cf69282e827b1227166f2e32cee3560f2f3e65b3f1f2faf6fb83d3b4c5b"
+    },
+    {
+      "path": "upstream/pstack/skills/reflect/references/divergent-reviewer.md",
+      "sha256": "221dfc0abf7cbcd25e1da3cd87323f5d1050fc3bf652e096d093584e183c98fb"
+    },
+    {
+      "path": "upstream/pstack/skills/reflect/references/judgment-reviewer.md",
+      "sha256": "a40ecb9b28bd2a3491e11a541157fe58efe158e0eda7b61a5006c14590aabe61"
+    },
+    {
+      "path": "upstream/pstack/skills/reflect/references/synthesizer.md",
+      "sha256": "2f76c847eb45b182dc6fbcbf7d96c8ee7e2986ecfd9e0d640fec44e3cc5a617c"
+    },
+    {
+      "path": "upstream/pstack/skills/reflect/references/tooling-reviewer.md",
+      "sha256": "bc49ced90fa81eaba3083b88aeb430d900a6d8f14ff40c1d6b52263bacfc77b6"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/epistemics.md",
+      "sha256": "fcc0f559c072832c869a5ada72434b4849320a637ae63c09e8ee14f7ad787059"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/investigator-prompt.md",
+      "sha256": "6892956a7ab0b5ee6c4babaf4f793703abe89b350ea7cb9463b4a56eea1c8266"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/source-playbook.md",
+      "sha256": "9ae9dcb9d09111c9facc68510331c5aba4aed9b1b057314ff1fc0e166ad3993a"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/sources/code-archaeology.md",
+      "sha256": "8c14aa382f0de40829b2668d43e3f54814480bb93a486c9282ada4003f6b9dbd"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/sources/databricks.md",
+      "sha256": "236ede7aab6454662a992db088a5393537a5233a4c26719c93188f9e174488f6"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/sources/datadog.md",
+      "sha256": "ebe9c07bac28e47757ee7f16fb93b0c01d427a08c501957d047f395a2f37b7e7"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/sources/incident-postmortem.md",
+      "sha256": "a899470f05f86029630a13a2696491cc708ca7b56a6e822a69ff6e954d6ff8cf"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/sources/linear.md",
+      "sha256": "01304e7f1badfcfb78babbb0edcadeb3cc8dd3f713793420cdff24ba190f907c"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/sources/notion.md",
+      "sha256": "3bcfa695c49dfad4ac036d5d7181c12585f55ac04f1936198d16ab75a2788997"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/sources/sentry.md",
+      "sha256": "6f292bc4fb1548e956f95e1900b9481abf5134254419f1cd9edec95428c82d73"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/sources/slack.md",
+      "sha256": "58fee61d024b3700b407e7acbed367944720ff05adfddb6954d36c88368f3ba7"
+    },
+    {
+      "path": "upstream/pstack/skills/why/references/synthesizer-prompt.md",
+      "sha256": "733a3e9cf897b1aca56aaddeae01a3832e4bfed024c2f602db2d1bf807d7a73b"
     }
   ]
 }

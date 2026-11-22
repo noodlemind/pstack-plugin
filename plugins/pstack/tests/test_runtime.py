@@ -27,8 +27,48 @@ class RuntimeTests(unittest.TestCase):
   self.assertFalse(context(self.store,{'workspace':self.scope,'session':'new'})['mode']['enabled'])
   self.assertTrue(context(self.store,{'workspace':self.scope,'session':'other'})['mode']['enabled'])
  def test_all_playbooks_have_real_steps(self):
-  books=list((ROOT/'skills/poteto-mode/playbooks').glob('*.md'));self.assertEqual(len(books),23)
+  books=list((ROOT/'skills/poteto-mode/playbooks').glob('*.md'))
+  inventory=json.loads((ROOT/'references/upstream-inventory.json').read_text())
+  upstream={Path(entry['path']).stem for entry in inventory['files'] if entry['kind']=='playbook'}
+  self.assertEqual({p.stem for p in books},upstream)
   for p in books:self.assertTrue(context(self.store,{'workspace':self.scope,'playbook':p.stem})['steps'],p.name)
+ def test_existing_orchestrate_mode_resolves_after_upgrade(self):
+  # Previous releases keyed mode records by the resolved workspace path.
+  saved_scope=str(Path(self.scope).resolve())
+  key=saved_scope+'::workspace'
+  self.store.put('mode',key,{'id':key,'workspace':saved_scope,'enabled':True,'playbook':'orchestrate'},saved_scope)
+  alias=self.root/'repo-alias'
+  alias.symlink_to(saved_scope,target_is_directory=True)
+  installed=ROOT/'skills/figure-it-out/SKILL.md'
+  existing=self.call('context','get',workspace=str(alias),include_content=True)
+  self.assertTrue(existing['mode']['enabled'])
+  self.assertEqual(existing['mode']['playbook'],'figure-it-out')
+  self.assertEqual(existing['selected_playbook'],'figure-it-out')
+  self.assertEqual(Path(existing['playbook_path']),installed)
+  self.assertEqual(existing['playbook_text'],installed.read_text())
+  self.assertIn('Then execute the design',existing['playbook_text'])
+  self.assertNotIn('Do not implement',existing['playbook_text'])
+  self.assertEqual(select_playbook('orchestrate the whole project'),'figure-it-out')
+  activated=self.call('context','activate',workspace=self.scope,playbook='orchestrate')
+  self.assertEqual(activated['mode']['playbook'],'figure-it-out')
+  self.assertEqual(self.call('context','get',workspace=self.scope)['selected_playbook'],'figure-it-out')
+  tasks=self.call('task','start',workspace=self.scope,playbook='orchestrate')
+  self.assertEqual([t['title'].splitlines()[0] for t in tasks],
+                   ['Start','Phase A: Frame','Phase B: Design the workflow','Phase C: Run the loop',
+                    'Phase D: Keep the audit trail','Phase E: Verify and hand back'])
+  self.assertTrue(all(t['playbook']=='figure-it-out' for t in tasks))
+  self.assertIn('read the Principles',tasks[0]['title'])
+  self.assertIn('Then execute the design',tasks[2]['title'])
+ def test_explicit_multi_phase_planning_still_uses_the_plan_playbook(self):
+  result=self.call('context','select',workspace=self.scope,prompt='write a multi-phase plan for the whole project',include_content=True)
+  self.assertEqual(result['selected_playbook'],'multi-phase-plan')
+  self.assertIn('Do not implement',result['playbook_text'])
+ def test_tasks_retain_bullets_prose_and_nested_steps(self):
+  def tasks(book):
+   return [row['title'] for row in self.call('task','start',workspace=self.scope,playbook=book)]
+  self.assertTrue(any('Declare the mode' in title for title in tasks('babysit')))
+  self.assertTrue(any('Stack follow-ups' in title for title in tasks('opening-a-pr')))
+  self.assertTrue(any('Blocking first steps' in title for title in tasks('feature')))
  def test_ci_word_does_not_steal_feature(self):self.assertEqual(select_playbook('implement a specification'),'feature')
  def test_unavailable_model_rejected(self):
   with self.assertRaises(ValueError):configure(self.store,'unlimited',{r:['codex:invented'] for r in ROLES},'user choice')
@@ -39,9 +79,18 @@ class RuntimeTests(unittest.TestCase):
   self.store.put('model',model['key'],model)
   config=self.call('config','set',workspace=self.scope,budget='unlimited',roles={r:[model['key']] for r in ROLES},confirmation='Explicit fixture choices')
   self.assertEqual(Store(self.root/'data').get('config','models'),config)
-  self.assertEqual(len(config['roles']),17)
+  self.assertEqual(set(config['roles']),set(ROLES))
   with self.assertRaises(ValueError):self.call('config','set',workspace=self.scope,budget='small',roles={r:[model['key']] for r in ROLES},confirmation='')
   self.assertEqual(self.call('config','get',workspace=self.scope),config)
+ def test_legacy_role_preferences_remain_readable_after_reconfiguration(self):
+  active={role:['auto'] for role in ROLES}
+  self.assertEqual(len(active),9)
+  old={**active,'architect runners':['inherit-parent']}
+  configured=self.call('config','set',budget='large',roles=old,confirmation='explicit fixture roles')
+  fresh=self.call('config','set',budget='small',roles=active,confirmation='explicit fixture change')
+  self.assertNotIn('architect runners',fresh['roles'])
+  self.assertEqual(fresh['retired_roles']['architect runners'],configured['roles']['architect runners'])
+  self.assertEqual(self.call('config','get'),fresh)
  def test_model_probe_receives_provider_inputs_without_workspace_routing(self):
   with patch('providers.probe',return_value={'verified':True}) as probe:
    self.call('models','probe',workspace=self.scope,provider='codex',model='fixture',effort='max')
@@ -213,15 +262,22 @@ class RuntimeTests(unittest.TestCase):
   self.assertEqual(worktrees.cleanup(self.store,{'workspace':self.scope,'path':str(tree),'user_authorization':'isolated fixture'})['exit_code'],0);self.assertFalse(tree.exists())
  def test_worktree_cleanup_requires_authorization(self):
   with self.assertRaises(ValueError):worktrees.cleanup(self.store,{'workspace':self.scope,'path':self.scope})
- def test_frontier_frozen_order_is_readable_by_upstream_runtime(self):
+ def test_legacy_frontier_set_and_show_preserve_the_saved_order(self):
   folder=self.root/'orch';folder.mkdir();(folder/'frontier.json').write_text('{"generation":0,"prs":[],"lowestUnmerged":null}')
   rows=[{'nameWithOwner':'fixture/repo'},{'number':1,'state':'MERGED','headRefName':'first','baseRefName':'main','headRefOid':'1'*40},{'number':2,'state':'OPEN','headRefName':'second','baseRefName':'main','headRefOid':'2'*40}]
   with patch('frontier.gh_json',side_effect=rows) as fetch:
    got=self.call('orch','run',workspace=self.scope,argv=['--json','frontier','set','--repo','fixture/repo','--prs','1,2'],store_path=str(folder))
   self.assertEqual(fetch.call_args_list[0].args[0],['repo','view','fixture/repo','--json','nameWithOwner'])
   self.assertEqual(got['lowestUnmerged'],2);self.assertEqual(got['generation'],1);self.assertFalse((folder/'.orch.lock').exists())
-  result=subprocess.run(['bun',str(ROOT/'skills/poteto-mode/scripts/orch/orch.ts'),'--store',str(folder),'--json','frontier','show'],capture_output=True,text=True)
-  self.assertEqual(result.returncode,0,result.stderr);self.assertEqual(json.loads(result.stdout)['prs'][1]['sha'],'2'*40)
+  result=self.call('orch','run',workspace=self.scope,argv=['--store',str(folder),'frontier','show','--json'])
+  self.assertEqual(result['exit_code'],0);self.assertEqual(json.loads(result['stdout']),got)
+  compact=self.call('orch','run',workspace=self.scope,argv=['frontier','show'],store_path=str(folder))
+  self.assertIn('lowest-unmerged=2',compact['stdout'])
+ def test_retired_orch_command_leaves_existing_stores_untouched(self):
+  folder=self.root/'orch';folder.mkdir();path=folder/'units.json';path.write_text('existing units')
+  with self.assertRaisesRegex(ValueError,'retired.*orch'):
+   self.call('orch','run',workspace=self.scope,argv=['init'],store_path=str(folder))
+  self.assertEqual(list(folder.iterdir()),[path]);self.assertEqual(path.read_text(),'existing units')
  def test_frontier_rejects_noncontiguous_open_chain_without_mutation(self):
   folder=self.root/'orch';folder.mkdir();initial='{"generation":0,"prs":[],"lowestUnmerged":null}';(folder/'frontier.json').write_text(initial)
   rows=[{'nameWithOwner':'fixture/repo'},{'number':1,'state':'OPEN','headRefName':'first','baseRefName':'main','headRefOid':'1'*40},{'number':2,'state':'OPEN','headRefName':'second','baseRefName':'wrong','headRefOid':'2'*40}]

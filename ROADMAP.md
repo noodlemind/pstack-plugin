@@ -8,7 +8,7 @@ The [existing-port comparison](docs/existing-ports.md) records prior art. The [p
 
 - Native execution policy; no remote computer bridge or public endpoint.
 - Explicit first-user budget selection, persistent changes and preserved existing preferences.
-- Upstream 0.15.9 imported and reviewed; [update evidence](docs/upstream-0.15.9.md) and [tracking issue](https://github.com/noodlemind/pstack-plugin/issues/4).
+- Latest upstream import covers pstack 0.15.46. [Update evidence](docs/upstream-0.15.46.md) and [tracking issue](https://github.com/noodlemind/pstack-plugin/issues/17).
 - Original source/license inventory and reviewed upstream update mechanism.
 - Source-only public distribution, staged-tree privacy checks and reproducible verification.
 

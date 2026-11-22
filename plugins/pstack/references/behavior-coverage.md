@@ -1,16 +1,16 @@
 # pstack behavior coverage — native execution design
 
-Current package: **0.15.9-openai.8**. Upstream pin: `e43c7ee26e0038c6c1fa8380dd34ce86ff94cb2a` (pstack 0.15.9). This independent port executes inside the current coding host. All original source files, both MIT licenses and attribution remain preserved. Private development receipts are not published. Current checks are reproducible from this source tree; live-host coverage is identified separately.
+Current package: **0.15.46-openai.9**. Upstream pin: `7a583913eb1b8d1a0ee76753d1a2cf072e7b54f9` (pstack 0.15.46). This independent port executes inside the current coding host. All original source files, both MIT licenses and attribution remain preserved. Private development receipts are not published. Current checks are reproducible from this source tree; live-host coverage is identified separately.
 
 | Upstream capability | Current implementation | Evidence and limits |
 | --- | --- | --- |
-| Skills, playbooks, principles, four agents | 74 installed skills, 23 playbooks and four agent-role skills; original engineering steps retained with a host execution contract | Native plugin discovery; original archive hash verification; complete per-skill inventory below |
+| Skills, playbooks, principles, four agents | 82 installed skills, 22 playbooks and four agent-role skills; original engineering steps retained with a host execution contract | Native plugin discovery; original archive hash verification; installed skill directory and upstream inventory |
 | Correct | Scoped history, mistake classes, architecture/types/lint/tests before docs, rule-to-enforcement table | Release updater corrections and negative regression fixtures; no claim of exhaustive repository history mining |
 | Benchmark checklist and Explain the Number | Seven evidence questions, interleaved repeats, error/work counts, platform-specific profiler guidance | Invalid skipped-work benchmark inspected in an installed workflow; broader model judgment remains unverified |
 | Sticky poteto-mode and routing | Scoped persistent mode, playbook selection, trusted context hooks; explicit context reads when hooks unavailable | Existing mode/routing tests plus fresh installed native workflow. Cloud automatic hooks are not assumed |
 | Setup and coding harness detection | Passive executable inventory; native execution default; unsupported adapters disabled; no credential reads or program execution during scan | New harness tests and real local setup receipt. candidate presence and authentication are reported separately; installed tools differ by host |
 | Model discovery | Current host OpenAI catalog for native work; only explicitly selected local CLI catalogs may be queried | Host catalog integration was exercised during private development; this public suite uses labelled fixtures. Availability must be checked in each actual host |
-| Per-role models and reasoning | Saved native roles, explicit user choices, host catalog validation, supported-effort clamping, persistent budget; old CLI choices retained inactive | Native role/budget persistence and retired-model rejection tests; fresh users must choose a budget; existing explicit choices retained |
+| Per-role models and reasoning | Nine active native roles, preserved legacy selections, explicit user choices, host catalog validation, supported-effort clamping, persistent budget; old CLI choices retained inactive | Native role/budget persistence and retired-model rejection tests; fresh users must choose a budget; existing explicit choices retained |
 | Local optional model harnesses | Explicit same-machine opt-in, supported adapter and verified model required | Guards tested; prior real Codex/Claude/Grok adapter receipts remain historical. Adapters are currently disabled |
 | Cloud execution | Native OpenAI only; rejects local CLI activation and copied local profiles; no connection to another computer | Local policy tests passed. Actual Codex Cloud account/task installation and execution remain unverified |
 | Future API providers | Separate explicit provider setup with secrets belonging to the executing environment; cloud calls providers directly | Design preserved; disabled and not configured in this release |
@@ -25,105 +25,35 @@ Current package: **0.15.9-openai.8**. Upstream pin: `e43c7ee26e0038c6c1fa8380dd3
 | deslop, control-cli, control-ui | Preserved team-kit workflows; prefer current host shell/browser; optional local evidence helpers | Existing actual browser/PTY evidence and current runtime tests. A cloud host cannot access desktop-only surfaces |
 | Benny triage/reproduce/fix automations | Native connectors/scheduler, project identities, two repros and bounded draft fix; no public receiver required | Existing gate/repro tests; real project/channel/tracker schedules remain dormant until configured |
 | Weekly review, recall, reflect, workflow extraction | Workspace-scoped checkpoint/history and native authorized history tools | Adapted procedures retained; no scan of unrelated personal histories |
-| Personal installation | Supported local marketplace update; no MCP server/app mapping in installed plugin | 74 skills; no MCP/app registration; supported personal installer preserves unrelated configuration |
+| Personal installation | Supported local marketplace update; no MCP server/app mapping in installed plugin | 82 skills; no MCP/app registration; supported personal installer preserves unrelated configuration |
 | Remote computer access | No remote bridge or endpoint in this source distribution | Manifest/source checks; earlier private development services are not part of this repository |
-| Future upstream updates | Pinned originals, three-way plan/stage, semantic conflict review and preserved adapter policy | Version and archive checks, three-way staging regressions, hourly plan acceptance/rejection, and installed setup/recovery checks; see docs/upstream-0.15.9.md |
+| Future upstream updates | Pinned originals, three-way plan/stage, semantic conflict review and preserved adapter policy | Version and archive checks, three-way staging regressions, executable launcher checks, and installed setup/recovery checks; see docs/upstream-0.15.46.md |
 
 The native host owns permissions and execution. Helper directory scoping is not an OS sandbox. The package starts no network listener during normal setup/state/verification. Optional loopback UI/control helpers are local development tools and must not be published or tunneled.
 
-The 122 adapter tests cover the retained runtime and the new environment policy; the removed remote-server tests are no longer counted. Read the repository docs/verification.md for actual installed-run results and remaining live-host gaps.
+The adapter tests cover the retained runtime and the new environment policy; the removed remote-server tests are no longer counted. Read the repository docs/verification.md for actual installed-run results and remaining live-host gaps.
 
-## Per-skill inventory
+## Skill inventory
 
-Every skill below uses `references/runtime-contract.md` for native dispatch and reduced-capability reporting. Original procedures and supporting files are preserved under `upstream/`. Verification is shared by its relevant capability row above; inventory presence alone is not a workflow pass.
+Each directory in [skills](../skills/) contains a discoverable workflow or role. The [upstream inventory](upstream-inventory.json) records the original paths and hashes. Eight skills arrived in this update.
 
-| Installed skill | Procedure |
+| Skills | Use |
 | --- | --- |
-| agent-ci-watcher | Watch PR CI for the current branch and report pass/fail with relevant failure links. Use when waiting for CI results or CI has failed. Use proactively to monitor branch CI. |
-| agent-comment-sicko | A deranged comment-hater that savors deletion and condemns workaround code. |
-| agent-poteto-agent | Routing target for `/poteto-mode` and any request for poteto's style. Spawn a fresh `poteto-agent` for each new task, and resume one only in the strict cases that poteto-mode's Subagents section names. Reads the `poteto-mode` skill's `SKILL.md` in full before any work, including its inline Principles index. Substituting `generalPurpose` skips that read and drifts. |
-| agent-thermo-nuclear-code-quality-review | Thermo-nuclear code quality audit (maintainability, structure, 1k-line rule, spaghetti, code-judo). Invoked via Task after a parent gathers diff and file contents. Loads the rubric from the `thermo-nuclear-code-quality-review` skill in the cursor-team-kit plugin. |
-| architect | Sketch types, signatures, and module structure before code, then stay in the loop while implementation fills in. Use for /architect, 'architect this', 'design this', or non-trivial work where jumping to code would lock in the wrong shape. |
-| arena | Spawn N parallel candidates at the same task, pick a base, graft the strongest parts of the losers into it. Use for /arena, 'arena this', 'throw it in the arena', or when one attempt at a non-trivial artifact would lock in the wrong shape. |
-| automate-me | Use for \"automate me\", \"create/update/refresh my -mode skill\", \"turn/capture my preferences or working style into a skill\", or wanting agents to follow how the user works. Drafts or revises a personal -mode skill via create-skill + unslop, optionally pulling fresh evidence from recent transcripts. |
-| benchmark-checklist | Vet a perf measurement (limiter, tuning, limits, errors, repeatability, relevance, and whether the work happened) before you report or act on it. Use when you run a benchmark or report a speedup or regression you measured. |
-| blast-radius | Find what a change could break somewhere else before it ships, beyond the diff, and prove the one fact it's safe because of by running real code instead of writing it up. Use for 'blast radius of X', 'what could this break', or reviewing a small diff you don't trust. |
-| bro | Restate the last message in plain human language, with no jargon. |
-| check-compiler-errors | Run compile and type-check commands and report failures |
-| control-cli | Build or adapt a local harness to drive, inspect, and profile an interactive CLI or TUI without external services. Use for CLI UX checks, startup regressions, memory leaks, hangs, prompt flows, or terminal demos. |
-| control-ui | Build or adapt a local browser/CDP harness to drive and inspect a web, IDE, or Electron UI. Use for local UI verification, screenshots, accessibility snapshots, perf profiles, visual diffs, or reproducing UI bugs. |
-| correct | Find the mistakes agents keep repeating in this repo and make each one impossible. Try architecture first, then types, then a lint whose error names the fix, then a test, and write docs last. Prove each check fails on a real past mistake. Repeat this each time the operator corrects you. Use for /correct. |
-| create-verification-skill | Generate a project-local verification skill that drives your app the way a user does — any language, framework, or platform. Use for /create-verification-skill, \"make a control skill for this repo\", or when a project has no scripted way to prove UI/CLI/service behavior. |
-| deslop | Remove AI-generated code slop and clean up code style |
-| figure-it-out | Design an auditable playbook when no narrower one fits: a large migration, an ambitious multi-part change, or work a human reviews after stepping away. Scales rigor to the task, runs a hypothesis loop, and logs decisions via show-me-your-work. Use for /figure-it-out, 'figure it out', a large migration, or when no narrower playbook applies. |
-| fix-ci | Find failing PR checks, inspect logs or external check links, and apply focused fixes |
-| fix-merge-conflicts | Resolve merge conflicts non-interactively, validate build and tests, and finalize conflict resolution |
-| get-pr-comments | Fetch and summarize review comments from the active pull request |
-| how | Use for \"how does X work\", code walkthroughs before changing something, and placement / ownership / layering questions (\"where should this live\", \"which package owns this\", \"is this the right layer\"). Explains subsystem architecture, runtime flow, onboarding mental models. Use why for motivation. |
-| interrogate | Use for \"interrogate\", \"adversarial review\", \"multi-model review\", \"challenge this\", \"stress test this code\", \"find blind spots\", or \"tear this apart\". Multiple LLM reviewers challenge changes from independent angles. |
-| loop-on-ci | Monitor PR checks and fix failures until green. Uses gh pr checks as the source of truth for PR-attached checks. |
-| maintain-verification-skill | Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for /maintain-verification-skill or \"audit the verify skill\". |
-| make-bot-ui | Build a local UI or authenticated webhook that starts a configured pstack background worker, keeping the sender key out of the browser and chat. |
-| make-pr-easy-to-review | Prepare PRs for review by cleaning noisy history, improving PR descriptions, and adding reviewer guidance without changing code behavior. Use for "make this easy to review", "tidy this PR", "clean up commits", or "annotate the diff". |
-| new-branch-and-pr | Create a fresh branch, complete work, and open a pull request |
-| no-comments | Spawn Comment Sicko, fix accepted findings, and offer encodings for claimed constraints. |
-| poteto-mode | poteto's agent style for concise, detailed responses, deliberate subagents, unslopped prose, simple code, and verified work. Use for poteto, /poteto-mode, or requests to work in this style. |
-| pr-review-canvas | Generate an interactive PR review walkthrough as an HTML page. Fetches PR data via gh API, categorizes files into core vs mechanical changes, adds reviewer annotations, and renders diffs with moved-code detection. Use when the user pastes a GitHub PR URL and asks for a review, walkthrough, or summary, or says "review this PR". |
-| principle-attack-the-premise | Apply when two or more fixes that share one premise have failed the same gate. Take a census of which actors hold the imbalance before the next fix, then question the premise instead of writing another fix that assumes it. |
-| principle-boundary-discipline | Apply when wiring validation, error handling, or framework adapters. Concentrate guards at system boundaries (CLI, config, network, external APIs); trust internal types and keep business logic in pure functions. |
-| principle-build-the-lever | Apply to any non-trivial work, not just bulk work: edits, migrations, analyses, checks. Build the tool that does it or proves it (codemod, script, generator, or a skill your subagents follow) instead of working by hand. The tool is the artifact a reviewer can rerun. |
-| principle-encode-lessons-in-structure | Apply when you catch yourself writing the same instruction a second time, or notice a recurring correction. Encode the rule as a lint, metadata flag, runtime check, or script instead of more text. |
-| principle-exhaust-the-design-space | Apply when facing a novel UI interaction or architectural decision with no precedent in the codebase. Build 2-3 competing prototypes and compare side by side before committing. |
-| principle-experience-first | Apply when product, UX, or feature-scope tradeoffs come up. Choose user delight over implementation convenience; ship fewer polished features over more rough ones. |
-| principle-explain-the-number | Apply before you trust, report, or act on a number you measured: a speedup, a regression, a throughput, a latency, or an eval result. Find what limits it, and rule out that it measured something other than the work you think. |
-| principle-fix-root-causes | Apply when debugging. Trace each symptom to its root cause and fix it there; reproduce first, ask why until you reach it, resist nil-check guards that silence crashes. |
-| principle-foundational-thinking | Apply before writing logic: choosing core types and data structures, sequencing scaffold-vs-feature work, asking what concurrent actors share. Get the data structures right so downstream code becomes obvious. |
-| principle-guard-the-context-window | Apply when context is filling up: large outputs, long files, repeated reads, fan-out planning. Route bulk to subagents; keep summaries in the main thread, not raw payloads. |
-| principle-laziness-protocol | Apply when refactoring, evaluating diff size, or tempted to add abstractions, layers, or signal threading. Bias toward deletion and the smallest change that solves the problem. |
-| principle-make-operations-idempotent | Apply when designing commands, lifecycle steps, or processing loops that run amid crashes, restarts, and retries. Converge to the same end state regardless of partial prior runs. |
-| principle-migrate-callers-then-delete-legacy-apis | Apply when introducing a new internal API while old callers still exist. Migrate callers and delete the old API in the same wave instead of preserving compatibility layers. |
-| principle-minimize-reader-load | Apply when reviewing or shaping code that's hard to trace. Count layers between question and answer, and hidden state in the reader's head; collapse one-caller wrappers and shrink mutable scope. |
-| principle-model-the-domain | Apply when writing stateful logic, or when code branches a lot or repeats a shape assumption across files. Encode the domain in a structure instead of scattered conditionals. |
-| principle-never-block-on-the-human | Apply when tempted to ask 'should I do X?' on reversible work. Proceed, present the result, let the human course-correct after the fact; reserve confirmation for irreversible actions. |
-| principle-outcome-oriented-execution | Apply during planned rewrites and migrations with explicit phase boundaries. Converge on the target architecture; don't preserve smooth intermediate states with throwaway compatibility code. |
-| principle-prove-it-works | Apply after completing a task, before declaring done. Verify against the real artifact (run the feature, read the actual value, inspect the diff), not a proxy, self-report, or 'it compiles.' |
-| principle-redesign-from-first-principles | Apply when integrating a new requirement into an existing design. Redesign as if the requirement had been a foundational assumption from day one, instead of bolting it on. |
-| principle-separate-before-serializing-shared-state | Apply when concurrent actors might write to the same file, branch, key, or state object. Eliminate the sharing first; serialize structurally only when one shared writer is a real invariant. |
-| principle-sequence-verifiable-units | Apply to multi-step work (sweeps, migrations, runs of similar edits) and to how you stack commits and PRs. Break work into small units that each end in a verifiable state, check each before the next, and order delivery so the sequence proves itself to a reviewer. |
-| principle-subtract-before-you-add | Apply when sequencing an addition, refactor, or rewrite. Remove dead code, redundant validators, and stub references first, then build on the simpler base. |
-| principle-test-behavior-not-implementation | Apply when you write, change, or keep a test. Call the code the way its users do and assert the result they observe against a literal expected value. If the test would still pass when every imported function returns undefined, rewrite the assertion or delete the test. |
-| principle-type-system-discipline | Apply when designing types, reviewing a function signature, or writing code in any statically-typed language. Make illegal states unrepresentable, brand semantic primitives, parse external data at boundaries, refuse to lie to the compiler, exhaust variants, derive from authoritative schemas. |
-| recall | Reconstruct your recent working context from your own chat history, live state, and the shared record (user reports, prior fixes, incidents), then hand back a tight current-state brief. Use for 'recall my work on X', 'catch me up', 'what have I been working on', 'where did I leave off', before starting or resuming work. |
-| reflect | Spawn three parallel review subagents over the active transcript, surface learnings, and route each to a concrete edit on an existing skill. Use when the user says reflect. |
-| review-and-ship | Review the current branch for bugs, intent fit, and test coverage; run or write tests; commit focused work; open or update a PR. |
-| run-smoke-tests | Run Playwright smoke tests, debug failures, and verify fixes |
-| setup-pstack | Set up pstack in the current coding environment. Detect available coding harnesses, use native agents by default, and configure optional local providers without servers, tunnels or remote laptop access. |
-| show-me-your-work | Keep a reviewable decision trail for long-running or unattended work: a TSV log with one row per decision (what, why, evidence, result). Local by default; commit it when a reviewer needs the trail to trust the result. Use for /show-me-your-work, autonomous or multi-phase runs, or work a human reviews after stepping away. |
-| swarm | Fan out N parallel workers, drain them, and return one report. Use for /swarm, 'swarm this', or parallel coverage, races, gauntlets, and exploration. |
-| tdd | Use only when the user explicitly asks for TDD, a failing test, or a regression test, OR when the bug has an obvious cheap local test target. Skip when the test path is unclear, expensive, integration-heavy, or not requested. |
-| teach | Explain a body of work plainly so a person actually understands it. Runs the `how` and `why` skills and weaves what they find into one clear explanation. Use for 'teach me this', 'help me really understand X', 'explain this change or subsystem to me'. |
-| team-kit-rules | Apply the two preserved cursor-team-kit engineering rules when writing code, including exhaustive TypeScript switches. |
-| technical-writing | Layered technical-writing standard: Diátaxis structure, Google developer style sentences, STE instruction rules, Global English syntax. Use for /technical-writing or when writing or reviewing docs, RFCs, readmes, PR descriptions, or commit messages. |
-| thermo-nuclear-code-quality-review | Run an extremely strict maintainability review for abstraction quality, giant files, and spaghetti-condition growth. Use for a thermo-nuclear code quality review, thermonuclear review, deep code quality audit, or especially harsh maintainability review. |
-| typescript-best-practices | TypeScript best practices. Use when reading or editing any .ts or .tsx file. |
-| unslop | Cut AI tells from any writing. Must always apply. |
-| update-pstack | Absorb a future upstream pstack/cursor-team-kit commit into the OpenAI port with three-way merging and behavior verification. |
-| verify-this | Verify a claim with fresh local evidence: restate it falsifiably, capture baseline and treatment, compare artifacts, and return VERIFIED, NOT VERIFIED, or INCONCLUSIVE. |
-| weekly-review | Produce a weekly synthesis of authored commits with highlights by bugfix, tech debt, and net-new work |
-| what-did-i-get-done | Summarize authored commits over a user-specified time period into a concise update |
-| why | Use for 'why does X work this way', 'why we picked Y', design rationale, regressions, postmortems, or data-backed thresholds. Discovers available MCPs and queries each evidence category (source control, issue tracker, long-form docs, real-time chat, infrastructure observability, error tracking, product analytics warehouse) in parallel, then returns a cited read on decisions and tradeoffs. Use how for runtime behavior. |
-| workflow-from-chats | Extract durable working preferences from recent Cursor chats and convert them into skills, rules, or workflow docs. Use when asked to learn preferences, mine feedback, personalize workflows, or generate team/person-specific agent guidance. |
+| `statechart` | Run TLC on a TLA+ model and render reachable states and property failures. |
+| `create-formal-verification-skill`, `maintain-formal-verification-skill` | Build and maintain a project-specific model or proof and relate its properties to running code. |
+| `ketchup`, `ketchup-video` | Brief the operator and optionally prepare a short subtitled video when the host supports the required media tools. |
+| `poteto-help`, `in-your-own-words`, `sharpen` | Find the right workflow, restate the goal, or refine the task before execution. |
 
 ## Playbooks, agents, configuration and dependencies
 
-All 23 playbooks retain their original numbered procedures and principle references. Mode routing and durable step extraction are tested for every book. The fresh installed native run exercised investigation and recovery; the remaining books use the shared mechanisms with the individual limits below.
+The package contains 22 playbooks. The table records their scope and remaining live-workflow limits.
 
 | Playbook | Native implementation and verification limit |
 | --- | --- |
 | authoring-a-skill | Host skill authoring plus actual validation; no new project skill tested here |
 | autonomous-run | Host continuation, explicit predicate and stop/cancel limits; native idle wake needs a scheduler |
 | autopilot-full | Original complete sequence with native checkpoints and verification; full application run untested |
-| autopilot-stack | Frozen bottom-to-top GitHub order and exact-head gates; actual stack shipping untested |
+| autopilot-stack | Inherits autopilot-full, stacks only dependent PRs, and stops for operator handoff at verified green heads |
 | babysit | Native GitHub/gh checks and review remediation; historical read/watch evidence, no authorized mutation target |
 | bug-fix | Reproduce, native fix, actual proof; prior optional CLI repair receipt is historical |
 | eval | Blinded rubric and evidence preserved; project-specific evaluation untested |
@@ -132,7 +62,6 @@ All 23 playbooks retain their original numbered procedures and principle referen
 | investigation | Fresh installed native run completed with real verification and recorded skipped steps |
 | multi-phase-plan | Durable dependency units and decisions; project-specific plan not supplied |
 | opening-a-pr | Current host Git/PR integration and attachment; actual PR creation not tested |
-| orchestrate | Original Bun units/inbox/gates/ledger and GitHub frontier adapter; existing runtime tests |
 | pause-safely | Host cancellation plus scoped checkpoint; runtime cancellation guards and recovery tests |
 | perf-issue | Actual measurement and profiling required; no performance improvement claimed |
 | prototype | Host artifacts and browser with original steps; design target not supplied |
@@ -150,12 +79,12 @@ Benny retains `setup-benny`, `triage-issue-reports`, `reproduce-and-fix-issues`,
 
 | Mechanism or external dependency | Current handling / evidence |
 | --- | --- |
-| Cursor manifest/skills/agents/rules | Root manifest plus native Codex manifest, 71 discovered skills, optional trusted lifecycle bridge; no MCP/app registration |
+| Cursor manifest/skills/agents/rules | Root manifest plus native Codex manifest, 82 packaged skills, optional trusted lifecycle bridge; no MCP/app registration |
 | pstack-models.mdc, user model prompts, speed/reasoning suffixes | Persistent SQLite configuration with explicit role/budget choices and exact host identifiers; no guessed Cursor model IDs |
 | Task/TodoWrite/background/update_state | Native agent/plan/continuation tools plus durable tasks and checkpoints; actual host restrictions apply |
 | create-skill/context-loader/history | Native skill authoring and scoped task history; no unrelated personal transcript scan |
 | Python and SQLite | Python 3.11+ and standard library for helpers; installed tests ran under Python 3.12; interpreter required in the executing environment |
-| Bun and Commander | Original orchestration/watch tools and pinned Commander 14 retained; historical 52 upstream tests; Bun needed when those scripts run |
+| Bun and Commander | The upstream PR watcher uses Bun and Commander 14. The upstream Bun orchestration command was retired |
 | Node and Playwright | Optional browser helper bundles Playwright 1.63.0; its package requires Node 20+; browser availability remains host-specific |
 | Chrome/Electron/CDP | Prefer native browser tools; optional local captures have historical evidence; no live Electron target provided |
 | tmux/terminal control | Native terminal tools or local PTY helper; tmux is not required |
@@ -173,4 +102,4 @@ Benny retains `setup-benny`, `triage-issue-reports`, `reproduce-and-fix-issues`,
 | Marketplace, hooks and state | Supported personal install, preserved other entries, state outside cache; hooks require host trust, explicit context reads are the fallback |
 | Former MCP SDK/Uvicorn/OAuth/Railway dependencies | Removed from active runtime and private installation; attribution and historical receipts retained only |
 
-Every original source/configuration/template/asset is listed with its path and SHA-256 in `upstream-inventory.json`: 190 original files remain byte-identical. Git records adapter changes separately; tools/check_upstream.py verifies originals. Inventory and preserved instructions alone are not behavioral proof.
+Every original source/configuration/template/asset is listed with its path and SHA-256 in `upstream-inventory.json`: 582 original files remain byte-identical. Git records adapter changes separately; tools/check_upstream.py verifies originals. Inventory and preserved instructions alone are not behavioral proof.

@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -22,6 +23,11 @@ class ReleaseChecks(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'Missing adapted skill file: skills/correct'):
             check(self.plugin)
 
+    def test_missing_companion_asset_fails_even_with_intact_archive(self):
+        (self.plugin/'assets/avatar.png').unlink()
+        with self.assertRaisesRegex(AssertionError, 'Missing adapted file: assets/avatar.png'):
+            check(self.plugin)
+
     def test_stale_package_version_fails(self):
         path = self.plugin/'runtime/package.json'
         data = json.loads(path.read_text())
@@ -38,19 +44,32 @@ class ReleaseChecks(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'Upstream versions disagree'):
             check(self.plugin)
 
-    def test_hourly_plan_passes_and_old_cadence_fails(self):
-        template = (self.plugin/'skills/poteto-mode/playbooks/multi-phase-plan.md').read_text()
-        plan = template.split('````markdown\n', 1)[1].split('\n````', 1)[0]
-        plan = plan.replace('<swarm workers model>', 'fixture-model')
-        path = Path(self.temp.name)/'plan.md'
-        script = self.plugin/'skills/poteto-mode/scripts/check-plan.mjs'
-        path.write_text(plan)
-        passed = subprocess.run(['node', str(script), str(path)], capture_output=True, text=True)
-        self.assertEqual(passed.returncode, 0, passed.stderr)
-        path.write_text(plan.replace('/loop 1h', '/goal with a 30-minute audit'))
-        failed = subprocess.run(['node', str(script), str(path)], capture_output=True, text=True)
-        self.assertNotEqual(failed.returncode, 0)
-        self.assertIn('Program checklist lacks "/loop 1h"', failed.stderr)
+    @unittest.skipUnless(os.name == 'posix', 'Requires POSIX executable permissions')
+    def test_launcher_mode_is_verified_in_archive_and_adaptation(self):
+        launcher = 'skills/statechart/scripts/statechart'
+        for path, message in [(self.plugin/'upstream/pstack'/launcher, 'Upstream file mode differs'),
+                              (self.plugin/launcher, 'Adapted skill file must be executable')]:
+            with self.subTest(path=path):
+                path.chmod(0o644)
+                with self.assertRaisesRegex(AssertionError, message):
+                    check(self.plugin)
+                path.chmod(0o755)
+
+    @unittest.skipUnless(os.name == 'posix', 'The shell launcher is shipped for POSIX hosts')
+    def test_statechart_launcher_replays_a_counterexample(self):
+        scripts = self.plugin/'skills/statechart/scripts'
+        fixture = scripts/'test/corpus/CounterDeadlock'
+        output = Path(self.temp.name)/'output'
+        env = dict(os.environ, JAVA=str(scripts/'test/java.ts'),
+                   TLA2TOOLS='fixture.jar', STATECHART_REPLAY=str(fixture))
+        run = subprocess.run(
+            [scripts/'statechart', fixture/'CounterDeadlock.tla', '--out', output],
+            env=env, capture_output=True, text=True, timeout=60,
+        )
+        self.assertEqual(run.returncode, 1, run.stderr)
+        self.assertEqual(run.stderr, '')
+        for artifact in ['chart.mmd', 'report.md']:
+            self.assertEqual((output/artifact).read_bytes(), (fixture/artifact).read_bytes())
 
 
 if __name__ == '__main__':

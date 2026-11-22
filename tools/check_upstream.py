@@ -3,12 +3,13 @@ from pathlib import Path
 import argparse
 import hashlib
 import json
+import os
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / 'plugins/pstack'
 sys.path.insert(0, str(PLUGIN/'runtime'))
-from upstream_sync import mapped
+from upstream_sync import file_mode, mapped
 
 
 def check(plugin=PLUGIN):
@@ -28,9 +29,14 @@ def check(plugin=PLUGIN):
         path = (plugin/'upstream'/row['path']).resolve()
         assert path.is_relative_to((plugin/'upstream').resolve()), 'Unsafe upstream path'
         assert hashlib.sha256(path.read_bytes()).hexdigest() == row['sha256'], row['path']
+        if os.name == 'posix':
+            assert file_mode(path) == row['git_mode'], f'Upstream file mode differs: {row["path"]}'
         target = mapped(row['path'])
-        if target and target.startswith('skills/'):
-            assert (plugin/target).is_file(), f'Missing adapted skill file: {target}'
+        if target:
+            label = 'skill file' if target.startswith('skills/') else 'file'
+            assert (plugin/target).is_file(), f'Missing adapted {label}: {target}'
+            if os.name == 'posix' and row['git_mode'] == '100755':
+                assert file_mode(plugin/target) == '100755', f'Adapted {label} must be executable: {target}'
     actual = {str(p.relative_to(plugin/'upstream')) for p in (plugin/'upstream').rglob('*') if p.is_file() and '__pycache__' not in p.parts and 'node_modules' not in p.parts}
     assert actual == {row['path'] for row in inventory['files']}, 'Original file inventory drifted'
     assert (plugin/'LICENSE').read_bytes() == (plugin/'upstream/pstack/LICENSE').read_bytes()

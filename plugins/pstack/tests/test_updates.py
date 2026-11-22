@@ -39,6 +39,60 @@ class UpdateTests(unittest.TestCase):
   self.target.write_bytes(self.target.read_bytes().replace(b'First upstream paragraph.',b'Port competing change.'));self.write(self.file,self.old.replace(b'First upstream paragraph.',b'Upstream competing change.'));self.commit();plan=sync.plan(self.repo,'HEAD',self.root);self.assertTrue(plan['blockers']);dest=self.home/'candidate';sync.stage(plan,dest,self.root);self.assertIn('Port competing',(dest/'skills/demo/SKILL.md').read_text());self.assertTrue((dest/'.upstream-update/conflicts/skills/demo/SKILL.md.incoming').is_file())
  def test_new_skill_imported_with_contract(self):
   self.write('pstack/skills/new/SKILL.md',self.old.replace(b'name: demo',b'name: new'));self.commit();plan=sync.plan(self.repo,'HEAD',self.root);dest=self.home/'candidate';sync.stage(plan,dest,self.root);self.assertIn('OpenAI runtime contract',(dest/'skills/new/SKILL.md').read_text())
+ def test_unchanged_archive_repairs_missing_mapped_asset(self):
+  path='cursor-team-kit/assets/avatar.png'
+  data=b'\x89PNG\r\n\x1a\n'
+  self.write(path,data)
+  self.commit()
+  archive=self.root/'upstream'/path
+  archive.parent.mkdir(parents=True)
+  archive.write_bytes(data)
+  plan=sync.plan(self.repo,'HEAD',self.root)
+  self.assertEqual([(change['target'],change['action']) for change in plan['changes']],
+                   [('assets/avatar.png','restore')])
+  dest=self.home/'candidate'
+  sync.stage(plan,dest,self.root)
+  self.assertEqual((dest/'assets/avatar.png').read_bytes(),data)
+ def test_stage_preserves_new_executable_in_archive_and_adaptation(self):
+  launcher='pstack/skills/demo/scripts/launcher'
+  self.write(launcher,b'#!/bin/sh\nexit 0\n')
+  (self.repo/launcher).chmod(0o755)
+  self.commit()
+  plan=sync.plan(self.repo,'HEAD',self.root)
+  row=next(row for row in plan['inventory'] if row['path']==launcher)
+  dest=self.home/'candidate'
+  sync.stage(plan,dest,self.root)
+  for path in [dest/'upstream'/launcher,dest/sync.mapped(launcher)]:
+   self.assertTrue(path.stat().st_mode & 0o100)
+   subprocess.run([str(path)],check=True)
+  self.assertEqual(row['git_mode'],'100755')
+ def test_mode_only_changes_propagate_and_preserve_adapted_content(self):
+  self.target.write_bytes(self.target.read_bytes()+b'Port-specific line.\n')
+  (self.repo/self.file).chmod(0o755)
+  self.commit()
+  first=self.home/'first'
+  sync.stage(sync.plan(self.repo,'HEAD',self.root),first,self.root)
+  for path in [first/'upstream'/self.file,first/sync.mapped(self.file)]:
+   self.assertTrue(path.stat().st_mode & 0o100)
+  (self.repo/self.file).chmod(0o644)
+  self.commit()
+  second=self.home/'second'
+  sync.stage(sync.plan(self.repo,'HEAD',first),second,first)
+  for path in [second/'upstream'/self.file,second/sync.mapped(self.file)]:
+   self.assertFalse(path.stat().st_mode & 0o100)
+  self.assertEqual((second/sync.mapped(self.file)).read_bytes(),self.target.read_bytes())
+ def test_port_mode_is_preserved_and_stale_mode_rejected(self):
+  self.target.chmod(0o755)
+  self.write(self.file,self.old+b'Updated text.\n')
+  self.commit()
+  plan=sync.plan(self.repo,'HEAD',self.root)
+  dest=self.home/'candidate'
+  sync.stage(plan,dest,self.root)
+  self.assertTrue((dest/sync.mapped(self.file)).stat().st_mode & 0o100)
+  self.assertFalse((dest/'upstream'/self.file).stat().st_mode & 0o100)
+  self.target.chmod(0o644)
+  with self.assertRaisesRegex(ValueError,'changed after plan'):
+   sync.stage(plan,self.home/'stale',self.root)
  def test_stage_preserves_identity_and_updates_all_package_versions(self):
   (self.root/'plugin.json').write_text(json.dumps({'name':'pstack','version':'0.1.0-openai.1','homepage':'https://example.com/adapter'}))
   (self.root/'runtime').mkdir()
@@ -69,6 +123,25 @@ class UpdateTests(unittest.TestCase):
   with self.assertRaises(ValueError):sync.stage(plan,self.home/'candidate',self.root)
  def test_removed_custom_skill_requires_conflict_review(self):
   self.target.write_bytes(self.target.read_bytes()+b'Personal extension.\n');(self.repo/self.file).unlink();self.commit();plan=sync.plan(self.repo,'HEAD',self.root);self.assertIn(self.file,plan['blockers'])
+ def test_published_deletions_retain_hashes_and_clear_reintroduced_paths(self):
+  relative=sync.mapped(self.file)
+  previous=sync.sha(b'previous release')
+  unrelated={'path':'runtime/obsolete.py','sha256':sync.sha(b'obsolete')}
+  (self.root/'RETIRED-FILES.json').write_text(json.dumps({'files':[
+   unrelated,{'path':relative,'sha256':previous}]}))
+  (self.repo/self.file).unlink()
+  self.commit()
+  first=self.home/'first'
+  sync.stage(sync.plan(self.repo,'HEAD',self.root),first,self.root)
+  rows={row['path']:row for row in json.loads((first/'RETIRED-FILES.json').read_text())['files']}
+  self.assertEqual(rows['upstream/'+self.file]['sha256'],sync.sha(self.old))
+  self.assertEqual(rows[relative]['sha256'],sync.sha(self.target.read_bytes()))
+  self.assertEqual(rows[relative]['previous_sha256'],[previous])
+  self.write(self.file,self.old)
+  self.commit()
+  second=self.home/'second'
+  sync.stage(sync.plan(self.repo,'HEAD',first),second,first)
+  self.assertEqual(json.loads((second/'RETIRED-FILES.json').read_text())['files'],[unrelated])
  def test_stage_rejects_path_escape(self):
   self.write(self.file,self.old+b'Changed.\n');self.commit();plan=sync.plan(self.repo,'HEAD',self.root);plan['changes'][0]['upstream_path']='../../escape'
   with self.assertRaises(ValueError):sync.stage(plan,self.home/'candidate',self.root)

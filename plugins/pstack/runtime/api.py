@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from frontier import frontier
+from playbooks import current_playbook, playbook_path, playbook_steps
 from worktrees import audit, cleanup
 import time
 
@@ -18,21 +19,21 @@ import harnesses
 from store import ROOT, Store, identity, now, workspace
 
 DESCRIPTION = {
-    "environment": "Environment-local harness discovery and native agent planning. Actions scan/preferences/setup/catalog/budget/configure/plan/record/jobs. Discovery reads executable presence only. preferences reports the user's chosen budget or requires_budget_choice; no default budget is selected. setup host auto/local/cloud, mode native/local-cli, enabled_cli,confirmation. Native is default; cloud always native OpenAI. catalog models and source must come from actual host tools. budget stores budget,confirmation; configure stores all 17 roles,confirmation. plan role,seats,require_cross_provider requires a chosen budget. record workspace,native_id,state,evidence saves actual host results, never dispatches. No remote connection.",
+    "environment": "Environment-local harness discovery and native agent planning. Actions scan/preferences/setup/catalog/budget/configure/plan/record/jobs. Discovery reads executable presence only. preferences reports the user's chosen budget or requires_budget_choice; no default budget is selected. setup host auto/local/cloud, mode native/local-cli, enabled_cli,confirmation. Native is default; cloud always native OpenAI. catalog models and source must come from actual host tools. budget stores budget,confirmation; configure stores the nine current roles,confirmation. plan role,seats,require_cross_provider requires a chosen budget. record workspace,native_id,state,evidence saves actual host results, never dispatches. No remote connection.",
     "artifact": "Read actual scoped runtime evidence, including image pixels. Action get data workspace,kind(job/control/verification),id,name optional. Without name lists owned files. Only runtime-owned evidence sets are accessible; private credentials/state are excluded. Images return native MCP image content; recordings/traces return embedded resources. Maximum artifact size is 8 MiB.",
     "worktree": "Audit Git worktrees without scanning unrelated Cursor histories. Actions audit/cleanup. data workspace; cleanup path,user_authorization. Cleanup only clean inactive runtime-owned trees. Native app-managed trees must use archive_worktree for recoverable snapshots.",
     "context": "Sticky poteto-mode, task-to-playbook selection, persistent per-role models and session context. Actions get/activate/deactivate/select. data: workspace; optional session, playbook, prompt. activate requires explicit user mode request. Read returned playbook and leaf principles.",
     "models": "Current native host catalog or explicitly selected local provider discovery and live inference probes. Actions discover/list/probe. probe data: provider (codex/claude/grok/gemini), model, effort; requires enabled local adapter. grok uses authenticated Grok Build CLI. Direct API providers are disabled. Explicit CLI selector/backend identities are checked. No fallback. Catalog presence alone is not verification.",
-    "config": "Persistent pstack model/budget configuration outside the plugin cache. Actions get/set. set data: budget (unlimited/large/medium/small), roles mapping ALL upstream role labels to lists of provider:model keys or auto/inherit-parent, confirmation from user's explicit selection. Never choose budget or roles silently.",
+    "config": "Persistent pstack model/budget configuration outside the plugin cache. Actions get/set. set data: budget (unlimited/large/medium/small), roles mapping the nine current upstream role labels to lists of provider:model keys or auto/inherit-parent, confirmation from user's explicit selection. Never choose budget or roles silently.",
     "agent": "Durable detached agents, coordination, reuse and cancellation. Actions spawn/get/list/wait/resume/cancel/message/inbox. spawn data: workspace,prompt,role,seat,readonly,agent_type,context_paths,timeout,ref; optional image_paths attaches scoped images through native Codex image input. Other providers image inputs are not silently substituted. Writers use separate Git worktrees. get/wait/resume/cancel data id; resume prompt. message data workspace,from,to,text. For in-flight messages recipient reads inbox; resume injects pending mail. Never claim immediate steering of a running native inference.",
-    "panel": "Distinct verified model/provider panels for arena, architect and adversarial review. Actions start/results/record. start data workspace,prompt,role (arena runners/architect runners/interrogate reviewers),kind,readonly,rubric,require_cross_provider. results id. record id,synthesis,evidence,verification_ids. Parent reads all results, scores rubric, deduplicates, judges and verifies. Repeated calls to one model cannot satisfy diverse review.",
+    "panel": "Distinct verified model/provider panels for arena, architect and adversarial review. Actions start/results/record. start data workspace,prompt,role (arena runners/arena cross-judge pool/interrogate reviewers),kind,readonly,rubric,require_cross_provider. results id. record id,synthesis,evidence,verification_ids. Parent reads all results, scores rubric, deduplicates, judges and verifies. Repeated calls to one model cannot satisfy diverse review.",
     "task": "Persistent dependency-aware task list, upstream playbook steps and explicit skips. Actions start/add/set/list. start data workspace,playbook. add workspace,title,depends_on. set id,state (pending/running/done/skipped/blocked),evidence or reason. Evidence required for done; preserve skipped steps.",
     "decision": "Append-only auditable decision trail. Actions append/list/export. append data workspace,phase,decision,why,evidence,result. Audit evidence against scoped history; export returns TSV path.",
     "checkpoint": "Interrupted-work recovery and scoped event history. Actions save/get/list/recover/history. save data workspace,intent,progress,verified,next_steps,key_files,gotchas. recover data workspace returns checkpoints, tasks, jobs, loops, history. Reverify inherited claims.",
     "loop": "Durable /loop equivalent, event wake plus heartbeat, continuation and explicit stop conditions. Actions start/get/list/pause/resume/cancel. start data workspace,prompt,done_command (argv; exit 0 means DONE),max_seconds,max_iterations,role,readonly,interval_seconds; optional wake_command and heartbeat_seconds. Budget exhaustion is BLOCKED. Never relax predicate. pause/cancel kill active owner and watcher.",
     "verify": "Run real commands and save receipts pinned to actual repository HEAD. Action run data workspace,argv,method,lane(unit/live/perf),head,verifier_job,timeout. Action get id. Compilation is not live verification; choose actual user surface and expected proof.",
     "pr": "GitHub snapshot, exact-head CI/review threads, upstream watch-pr monitoring and gated authorized shipping. Actions snapshot/watch/prepare/ship. snapshot/watch workspace,repo owner/name,number; watch mode check/drive/background/threads-only and timeout. prepare author_job,verifier_job,receipt_ids,verdict_evidence,required_lanes. ship plan_id,user_authorization. Babysit never grants merge authority; shipping must process stack bottom-up.",
-    "orch": "Preserved upstream orchestration CLI for units, standing orders, inbox, gates and verification ledger. Action run data workspace,argv,store_path optional. Native frontier adapter uses GitHub PRs and supplied bottom-to-top order instead of mandatory Graphite. argv is an argument list, not shell text.",
+    "orch": "Compatibility with existing orch frontier stores. Action run data workspace,argv,store_path. Use frontier show to read the saved PR order or frontier set --prs with an explicit comma-separated bottom-to-top order to refresh it from GitHub. For new workflows use task, decision and checkpoint instead.",
     "control_cli": "Persistent PTY harness. Actions start/snapshot/send/resize/stop. start workspace,argv. Others id. send text,after_snapshot digest. snapshot pattern,wait_seconds. Each action captures real transcript and saves evidence; resize rows,columns.",
     "control_ui": "Persistent Playwright/Chrome or Electron CDP harness with fresh snapshots, screenshots, traces, video and profiling. Actions start/snapshot/click/fill/press/navigate/resize/inspect/profile-start/profile-stop/heap/stop. start workspace,url,record_video; or cdp_url,marker. Workspace is required for Benny-owned captures. Structural action id,after_snapshot,selector,text/key/url. inspect reads state without forcing it.",
     "benny": "Benny immutable-thread coordination and actual reproduction/fix gates. Actions setup/get/plan/ingest/verdict/acknowledge/repro_gate/evidence/launch/confirm_repro/fix_gate/draft_gate/reconsider/cancel/runs. setup requires repository,default_branch,source_channel,triage_identity,tracker,control_skill,feature_map,four verified model roles and eight explicit budgets. plan workspace,configuration_path validates committed inputs and returns two native schedule prompts. evidence id,phase(baseline/patched),control_id,expected,broken consumes actual workspace-owned completed UI recordings at configured control_url. launch id,role,prompt dispatches an isolated model worker; media_review uses native Codex image attachments. confirm_repro id requires two distinct recordings and actual media verdict. fix_gate id,parent_preflight,root_cause_evidence enforces rejection window/ownership and one fix. draft_gate id,receipt_ids requires actual before/after UI and pinned unit/live proof. Native coordinator alone delivers outbox in the original thread; no worker gets posting credentials. Real connector activation remains explicit.",
@@ -50,7 +51,7 @@ def tools_list() -> list[dict]:
 
 
 def select_playbook(prompt: str) -> str:
-    patterns = [(r"pause|suspend|stop safely", "pause-safely"), (r"resume|pick.?up|interrupted", "session-pickup"), (r"autopilot.?stack", "autopilot-stack"), (r"autopilot.?full", "autopilot-full"), (r"orchestrat|multi.day|whole project", "orchestrate"), (r"ship|land|merge.*stack", "shipping"), (r"pr\b.*status|babysit|review comments|\bci\b|merge.ready", "babysit"), (r"trace|cpuprofile|heap snapshot|spindump", "trace-forensics"), (r"leak|idle.cpu|live symptom", "runtime-forensics"), (r"hillclimb|metric.*target|at least.*iterations", "hillclimb"), (r"perf|slow|latency", "perf-issue"), (r"bug|broken|defect|repro", "bug-fix"), (r"refactor|rename|behavior.preserv", "refactoring"), (r"pixel|visual parity", "visual-parity"), (r"prototype|sketch|mock", "prototype"), (r"skill\.md|author.*skill", "authoring-a-skill"), (r"eval|blinded", "eval"), (r"worktree.*clean|prune|reclaim disk", "worktree-cleanup"), (r"multi.phase|stacked.*pr", "multi-phase-plan"), (r"loop|until done|long.running|autonomous", "autonomous-run"), (r"how|why|read.only|investigat|are we sure", "investigation")]
+    patterns = [(r"pause|suspend|stop safely", "pause-safely"), (r"resume|pick.?up|interrupted", "session-pickup"), (r"autopilot.?stack", "autopilot-stack"), (r"autopilot.?full", "autopilot-full"), (r"(?:multi.phase|multi.day|whole project).*\bplan\b|\bplan\b.*(?:multi.phase|multi.day|whole project)", "multi-phase-plan"), (r"figure.it.out|orchestrat|program.scale|multi.day|whole project", "figure-it-out"), (r"ship|land|merge.*stack", "shipping"), (r"pr\b.*status|babysit|review comments|\bci\b|merge.ready", "babysit"), (r"trace|cpuprofile|heap snapshot|spindump", "trace-forensics"), (r"leak|idle.cpu|live symptom", "runtime-forensics"), (r"hillclimb|metric.*target|at least.*iterations", "hillclimb"), (r"perf|slow|latency", "perf-issue"), (r"bug|broken|defect|repro", "bug-fix"), (r"refactor|rename|behavior.preserv", "refactoring"), (r"pixel|visual parity", "visual-parity"), (r"prototype|sketch|mock", "prototype"), (r"skill\.md|author.*skill", "authoring-a-skill"), (r"eval|blinded", "eval"), (r"worktree.*clean|prune|reclaim disk", "worktree-cleanup"), (r"multi.phase|stacked.*pr", "multi-phase-plan"), (r"loop|until done|long.running|autonomous", "autonomous-run"), (r"how|why|read.only|investigat|are we sure", "investigation")]
     return next((book for pattern, book in patterns if re.search(pattern, prompt, re.I)), "feature")
 
 
@@ -59,21 +60,23 @@ def context(store: Store, args: dict, action="get") -> dict:
     key = scope + "::" + args.get("session", "workspace")
     candidates = [x for x in store.list("mode", scope) if x["id"] in {scope + "::workspace", key}]
     mode = next((x for x in candidates if x["id"] == key), candidates[-1] if candidates else None) or {"id": key, "workspace": scope, "enabled": False}
+    if mode.get("playbook") == "orchestrate":
+        mode = {**mode, "playbook": current_playbook(mode["playbook"])}
     if action in {"activate", "deactivate"}:
-        mode = {**mode, "id": key, "enabled": action == "activate", "playbook": args.get("playbook") or select_playbook(args.get("prompt", "")), "updated": now()}
+        requested_book = args.get("playbook") or select_playbook(args.get("prompt", ""))
+        path = playbook_path(ROOT, requested_book)
+        mode = {**mode, "id": key, "enabled": action == "activate", "playbook": current_playbook(requested_book), "updated": now()}
         store.put("mode", key, mode, scope)
-    book = args.get("playbook") or (select_playbook(args["prompt"]) if args.get("prompt") else mode.get("playbook", "feature"))
-    path = ROOT / "skills/poteto-mode/playbooks" / (book + ".md")
-    if not path.exists():
-        raise ValueError("unknown playbook")
+    else:
+        requested_book = args.get("playbook") or (select_playbook(args["prompt"]) if args.get("prompt") else mode.get("playbook", "feature"))
+        path = playbook_path(ROOT, requested_book)
+    book = current_playbook(requested_book)
     try:
         config = store.get("config", "models")
     except KeyError:
         config = {"state": "unconfigured", "required_action": "Run setup-pstack and read environment preferences for the chosen native budget. Configure optional CLI roles only if selected. Do not infer unavailable defaults."}
     text = path.read_text()
-    steps = re.findall(r"^\d+\. (.*)", text, re.M)
-    if not steps:
-        steps = re.findall(r"^\*\*[^\n]+", text, re.M)
+    steps = playbook_steps(text)
     result = {"mode": mode, "selected_playbook": book, "playbook_path": str(path), "steps": steps, "config": config, "adapter_contract": str(ROOT / "references/runtime-contract.md"), "note": "A new task reselects its playbook; active mode survives turns and compaction. Casual turns and explicit opt-out skip the workflow."}
     result["execution"] = harnesses.settings(store)
     result["preferences"] = harnesses.preferences(store)
@@ -113,7 +116,7 @@ class API:
             if action == "setup": return harnesses.setup(self.store, **data)
             if action == "catalog": return harnesses.catalog(self.store, **data)
             if action == "budget": return harnesses.budget(self.store, **data)
-            if action == "configure": return harnesses.configure_native(self.store, allowed_roles=providers.ROLES, panel_roles=providers.PANELS, **data)
+            if action == "configure": return harnesses.configure_native(self.store, **data)
             if action == "plan": return harnesses.native_plan(self.store, **data)
             if action == "record": return harnesses.native_record(self.store, args)
             return self.store.list("native_job", scope)
@@ -213,15 +216,7 @@ class API:
                 return self.engine.command_job(scope, argv, args.get("timeout", 300) + 15)
             return execute(argv, scope, args.get("timeout", 300) + 15)
         if op == "orch":
-            argv = args["argv"]
-            prefix = 0
-            while prefix < len(argv) and argv[prefix] in {"--json", "--force"}: prefix += 1
-            if argv[prefix:prefix + 2] == ["frontier", "set"]:
-
-                return frontier(args)
-            command = ["bun", str(ROOT / "skills/poteto-mode/scripts/orch/orch.ts")]
-            if args.get("store_path"): command += ["--store", args["store_path"]]
-            return execute(command + argv, scope)
+            return frontier(args)
         if op == "control_cli": return self.controls.cli(action, args)
         if op == "control_ui": return self.controls.ui(action, args)
         if op == "benny":

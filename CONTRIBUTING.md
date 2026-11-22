@@ -10,20 +10,19 @@ Do not edit `plugins/pstack/upstream/` directly. Fetch an exact upstream commit,
 
 ## Development checks
 
-Python 3.11+, Git, Bun and Node 20+ are needed for the full developer checks. Install pinned development dependencies from their lockfiles:
+Use Python 3.11+, Git, Bun and Node 22.18–22.x or 23.6+. The statechart renderer tests install their pinned npm packages on first use.
 
 ```sh
-cd plugins/pstack/skills/poteto-mode/scripts
-bun install --frozen-lockfile
-cd ../../../../..
+(cd plugins/pstack/skills/poteto-mode/scripts && bun install --frozen-lockfile)
 python3 -m unittest discover -s plugins/pstack/tests -v
 python3 -m unittest discover -s tools/tests -v
 python3 tools/check_fresh_setup.py
 python3 tools/check_upstream.py
-cd plugins/pstack/skills/poteto-mode/scripts
-bun test orch watch-pr
-bun run typecheck
+(cd plugins/pstack/skills/poteto-mode/scripts && bun run test && bun run typecheck)
+(cd plugins/pstack/skills/statechart/scripts && npm install --no-package-lock --ignore-scripts && npm test)
 ```
+
+Set `TLA2TOOLS` to the absolute path of the upstream-pinned TLC 1.7.4 jar with a JDK available to exercise the live model-checker cases. CI also checks two bounded models against real TLC.
 
 Optional local browser helpers use `npm ci --prefix plugins/pstack/runtime --ignore-scripts` and need a compatible browser. Normal setup and native verification do not require Playwright or another provider CLI.
 

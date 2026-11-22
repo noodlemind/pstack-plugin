@@ -44,5 +44,20 @@ jobs:
       - name: Preserved upstream tools
         working-directory: plugins/pstack/skills/poteto-mode/scripts
         run: |
-          bun test orch watch-pr
+          bun run test
           bun run typecheck
+      - name: Statechart compiler, replay and rendering
+        working-directory: plugins/pstack/skills/statechart/scripts
+        run: |
+          npm install --no-package-lock --ignore-scripts --no-audit --no-fund
+          npm test
+      - name: Check statechart against live TLC
+        working-directory: plugins/pstack/skills/statechart/scripts
+        run: |
+          export TLA2TOOLS="$RUNNER_TEMP/tla2tools.jar"
+          curl --fail --location --silent --show-error --retry 3 \
+            --output "$TLA2TOOLS" https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar
+          echo "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88  $TLA2TOOLS" | shasum -a 256 --check
+          node --disable-warning=ExperimentalWarning --test \
+            --test-name-pattern='^(Counter|CounterDeadlock) gives the committed chart and report when TLC runs$' \
+            test/corpus.test.ts

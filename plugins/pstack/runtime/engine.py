@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from xai_worker import credential
+from playbooks import playbook_path
 
 import fcntl
 import hashlib
@@ -167,7 +168,7 @@ class Engine:
                 if skill:
                     instructions += "\nRead this agent skill in full before work: " + str(ROOT / "skills" / skill / "SKILL.md")
             if mode and mode[-1].get("enabled"):
-                instructions += "\nPoteto mode is active. Read the playbook at " + str(ROOT / "skills/poteto-mode/playbooks" / (mode[-1].get("playbook", "feature") + ".md"))
+                instructions += "\nPoteto mode is active. Read the playbook at " + str(playbook_path(ROOT, mode[-1].get("playbook", "feature")))
             folder = self.store.home / "jobs" / ident
             folder.mkdir(parents=True)
             row = {"id": ident, "workspace": scope, "cwd": cwd, "prompt": prompt, "instructions": instructions, "context_paths": pointers, "role": role, "seat": args.get("seat", 0), "selection": model, "readonly": readonly, "state": "queued", "session": args.get("session"), "created": now(), "updated": now(), "events": str(folder / "events.jsonl"), "stderr": str(folder / "stderr.txt"), "result_path": str(folder / "result.json"), "timeout": min(max(float(args.get("timeout", 1800)), 1), 86400), "idempotency_key": key, "parent_id": args.get("parent_id")}
