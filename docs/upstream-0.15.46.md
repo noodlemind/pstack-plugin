@@ -8,7 +8,7 @@ The three-way update added 422 upstream files, changed 91 and removed 30. Of the
 
 | Area | Effect on the Codex port |
 | --- | --- |
-| Formal verification | `statechart` checks TLA+ models with TLC and writes a Mermaid chart and diagnostic report. Two companion skills create and maintain project verification procedures. The updater now preserves the executable bits on the launcher and test driver. |
+| Formal verification | `statechart` checks TLA+ models with TLC and writes a Mermaid chart and diagnostic report. Two companion skills create and maintain project verification procedures. The updater preserves executable bits. The Codex launcher resolves its physical directory so a relative link inside a symlinked directory finds the TypeScript entry point on macOS and Linux. |
 | Orchestration | The port routes program-scale work and saved orchestrate sessions to the installed `figure-it-out` skill. Explicit planning requests keep the multi-phase plan procedure. An operator can read or refresh an existing frontier store. New work uses tasks, decisions, checkpoints and native workers. |
 | Plans and PRs | Task extraction handles bullet lists and procedural paragraphs. The PR watcher remains available. The retired Bun orchestrator and plan checker were removed. Autopilot-stack hands verified green PRs to the operator. |
 | Setup and briefings | Setup uses the current host’s model catalog and the user’s chosen reasoning budget. New skills provide a help index, restate or sharpen a request, and deliver written or subtitled video updates. |

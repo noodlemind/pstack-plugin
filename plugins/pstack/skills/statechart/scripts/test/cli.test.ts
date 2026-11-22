@@ -144,10 +144,13 @@ const launcherTools = () => {
 
 const linkedLauncher = () => {
   const links = fs.mkdtempSync(path.join(os.tmpdir(), "statechart-links-"));
-  const [first, second] = [path.join(links, "a"), path.join(links, "b")];
+  const [first, second] = [path.join(links, "a"), path.join(links, "nested", "b")];
   fs.mkdirSync(first);
-  fs.mkdirSync(second);
-  fs.symlinkSync(path.relative(second, launcher), path.join(second, "statechart"));
+  const physical = path.join(links, "bin");
+  fs.mkdirSync(physical);
+  fs.mkdirSync(path.dirname(second));
+  fs.symlinkSync(physical, second, "dir");
+  fs.symlinkSync(path.relative(fs.realpathSync(second), launcher), path.join(second, "statechart"));
   fs.symlinkSync(path.join(second, "statechart"), path.join(first, "statechart"));
   return path.join(first, "statechart");
 };
