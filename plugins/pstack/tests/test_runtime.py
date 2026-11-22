@@ -33,10 +33,14 @@ class RuntimeTests(unittest.TestCase):
   self.assertEqual({p.stem for p in books},upstream)
   for p in books:self.assertTrue(context(self.store,{'workspace':self.scope,'playbook':p.stem})['steps'],p.name)
  def test_existing_orchestrate_mode_resolves_after_upgrade(self):
-  key=self.scope+'::workspace'
-  self.store.put('mode',key,{'id':key,'workspace':self.scope,'enabled':True,'playbook':'orchestrate'},self.scope)
+  # Previous releases keyed mode records by the resolved workspace path.
+  saved_scope=str(Path(self.scope).resolve())
+  key=saved_scope+'::workspace'
+  self.store.put('mode',key,{'id':key,'workspace':saved_scope,'enabled':True,'playbook':'orchestrate'},saved_scope)
+  alias=self.root/'repo-alias'
+  alias.symlink_to(saved_scope,target_is_directory=True)
   installed=ROOT/'skills/figure-it-out/SKILL.md'
-  existing=self.call('context','get',workspace=self.scope,include_content=True)
+  existing=self.call('context','get',workspace=str(alias),include_content=True)
   self.assertTrue(existing['mode']['enabled'])
   self.assertEqual(existing['mode']['playbook'],'figure-it-out')
   self.assertEqual(existing['selected_playbook'],'figure-it-out')
